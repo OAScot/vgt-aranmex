@@ -1,49 +1,151 @@
-/* MEJORAS DE DISEÑO ARANMEX */
+/* CSS MAESTRO - ARANMEX VGT SYSTEM */
 :root {
-    --black: #1a1a1a;
+    --black: #000000;
     --red-aranmex: #e31e24;
     --white: #ffffff;
-    --gray-light: #f4f7f6;
-    --shadow: 0 4px 6px rgba(0,0,0,0.1);
+    --gray-bg: #f4f7f6;
+    --gray-border: #dddddd;
+    --text-muted: #666666;
+    --blue-order: #2196F3;
+    --green-received: #4CAF50;
+    --shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
-body {
-    background-color: var(--gray-light);
-    line-height: 1.6;
+* { box-sizing: border-box; }
+
+body { 
+    font-family: 'Inter', sans-serif; 
+    background: var(--gray-bg); 
+    margin: 0; 
+    color: var(--black); 
 }
 
-/* El contenedor del logo para que siempre se vea bien */
+/* HEADER PROFESIONAL */
+.main-header { 
+    background: var(--white); 
+    padding: 15px 5%; 
+    display: flex; 
+    align-items: center; 
+    border-bottom: 3px solid var(--black); 
+    gap: 20px;
+    box-shadow: var(--shadow);
+}
+
+/* Contenedor del Logo AD */
 .logo-wrapper img {
-    height: 45px; /* Ajusta el tamaño de tu logo AD */
+    height: 50px;
     width: auto;
     display: block;
 }
 
-/* Mejorar las tarjetas de productos */
-.product-card {
-    border-radius: 8px; /* Bordes ligeramente redondeados */
-    border: none; /* Quitamos el borde simple */
+/* Fallback si no hay imagen (el cuadro rojo que tenías) */
+.ad-logo-box { 
+    background: var(--red-aranmex); 
+    color: white; 
+    font-weight: 800; 
+    padding: 10px 15px; 
+    font-size: 1.2rem; 
+    border-radius: 4px; 
+}
+
+.header-text h1 { margin: 0; font-size: 1.3rem; text-transform: uppercase; letter-spacing: -0.5px; }
+.header-text span { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; }
+
+/* CONTENEDOR PRINCIPAL */
+.container { max-width: 1200px; margin: 40px auto; padding: 0 20px; }
+
+/* FORMULARIO ESTILO INDUSTRIAL */
+.styled-form { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+    gap: 20px; 
+    background: white; 
+    padding: 30px; 
+    border-radius: 8px;
     box-shadow: var(--shadow);
-    padding: 20px;
-    background: var(--white);
-    border-top: 4px solid var(--black); /* Línea superior negra de autoridad */
+    margin-bottom: 50px; 
 }
 
-/* Si el pedido es URGENTE, le ponemos una línea roja */
-.product-card.urgent {
-    border-top: 4px solid var(--red-aranmex);
+.full-width { grid-column: 1 / -1; }
+
+.form-group label { 
+    display: block; 
+    font-size: 0.7rem; 
+    font-weight: 800; 
+    margin-bottom: 8px; 
+    text-transform: uppercase; 
+    color: var(--text-muted);
 }
 
-/* Animación al pasar el mouse */
-.product-card:hover {
+input, select, textarea { 
+    width: 100%; 
+    padding: 12px; 
+    border: 1px solid var(--gray-border); 
+    border-radius: 4px;
+    font-family: inherit; 
+    font-size: 0.9rem;
+}
+
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--red-aranmex);
+}
+
+/* TARJETAS DE REQUISICIÓN */
+.product-grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); 
+    gap: 25px; 
+}
+
+.product-card { 
+    background: white; 
+    border-radius: 8px;
+    padding: 25px; 
+    position: relative; 
+    box-shadow: var(--shadow);
+    border-top: 5px solid var(--black); /* Identificador de ingeniería */
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover { 
     transform: translateY(-5px);
-    transition: all 0.3s ease;
-    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
 }
 
-/* Botones con mejor aspecto */
-.btn-status {
-    border-radius: 5px;
+/* ESTADOS (BADGES) */
+.status-badge { 
+    font-size: 0.65rem; 
+    font-weight: 800; 
+    padding: 6px 12px; 
+    display: inline-block; 
+    margin-bottom: 20px; 
+    border-radius: 3px;
+    text-transform: uppercase;
     letter-spacing: 1px;
-    transition: background 0.3s ease;
 }
+
+.status-required { background: var(--black); color: white; }
+.status-stock { background: var(--green-received); color: white; }
+.status-ordered { background: var(--blue-order); color: white; }
+
+/* BOTONES DE ACCIÓN */
+.btn-status { 
+    width: 100%; 
+    padding: 14px; 
+    border: none; 
+    border-radius: 5px;
+    font-weight: 700; 
+    text-transform: uppercase; 
+    cursor: pointer; 
+    font-size: 0.75rem; 
+    margin-top: 15px; 
+    transition: 0.3s; 
+    letter-spacing: 1px;
+}
+
+.btn-primary { background: var(--black); color: white; }
+.btn-order { background: var(--blue-order); color: white; }
+.btn-received { background: var(--green-received); color: white; }
+.btn-close { background: var(--red-aranmex); color: white; }
+
+.btn-status:hover { filter: brightness(1.2); }
