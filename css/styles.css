@@ -1,42 +1,49 @@
+/* MEJORAS DE DISEÑO ARANMEX */
 :root {
-    --black: #000000;
-    --white: #ffffff;
+    --black: #1a1a1a;
     --red-aranmex: #e31e24;
-    --gray-bg: #f8f8f8;
-    --gray-border: #dddddd;
-    --text-muted: #666666;
-    --blue-order: #2196F3;
-    --green-received: #4CAF50;
+    --white: #ffffff;
+    --gray-light: #f4f7f6;
+    --shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
-body { font-family: 'Inter', sans-serif; background: var(--gray-bg); margin: 0; color: var(--black); }
+body {
+    background-color: var(--gray-light);
+    line-height: 1.6;
+}
 
-/* HEADER */
-.main-header { background: var(--white); padding: 15px 5%; display: flex; align-items: center; border-bottom: 2px solid var(--black); gap: 20px; }
-.ad-logo-box { background: var(--red-aranmex); color: white; font-weight: 800; padding: 10px 15px; font-size: 1.2rem; border-radius: 4px; }
-.header-text h1 { margin: 0; font-size: 1.2rem; text-transform: uppercase; }
-.header-text span { font-size: 0.7rem; color: var(--text-muted); }
+/* El contenedor del logo para que siempre se vea bien */
+.logo-wrapper img {
+    height: 45px; /* Ajusta el tamaño de tu logo AD */
+    width: auto;
+    display: block;
+}
 
-/* FORMULARIO Y GRILLA */
-.container { max-width: 1100px; margin: 30px auto; padding: 0 20px; }
-.styled-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; background: white; padding: 25px; border: 1px solid var(--gray-border); margin-bottom: 40px; }
-.full-width { grid-column: 1 / -1; }
-.form-group label { display: block; font-size: 0.7rem; font-weight: 700; margin-bottom: 5px; text-transform: uppercase; }
-input, select, textarea { width: 100%; padding: 10px; border: 1px solid var(--gray-border); font-family: inherit; box-sizing: border-box; }
+/* Mejorar las tarjetas de productos */
+.product-card {
+    border-radius: 8px; /* Bordes ligeramente redondeados */
+    border: none; /* Quitamos el borde simple */
+    box-shadow: var(--shadow);
+    padding: 20px;
+    background: var(--white);
+    border-top: 4px solid var(--black); /* Línea superior negra de autoridad */
+}
 
-/* TARJETAS */
-.product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
-.product-card { background: white; border: 1px solid var(--gray-border); padding: 25px; transition: 0.3s; position: relative; }
-.product-card:hover { border-color: var(--black); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+/* Si el pedido es URGENTE, le ponemos una línea roja */
+.product-card.urgent {
+    border-top: 4px solid var(--red-aranmex);
+}
 
-/* BADGES Y BOTONES */
-.status-badge { font-size: 0.6rem; font-weight: 800; padding: 5px 10px; display: inline-block; margin-bottom: 15px; border: 1px solid var(--black); }
-.status-required { background: var(--black); color: white; }
-.status-stock { background: var(--green-received); color: white; border: none; }
+/* Animación al pasar el mouse */
+.product-card:hover {
+    transform: translateY(-5px);
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+}
 
-.btn-status { width: 100%; padding: 12px; border: none; font-weight: 700; text-transform: uppercase; cursor: pointer; font-size: 0.7rem; margin-top: 10px; transition: 0.2s; }
-.btn-primary { background: var(--black); color: white; }
-.btn-order { background: var(--blue-order); color: white; }
-.btn-received { background: var(--green-received); color: white; }
-.btn-close { background: var(--black); color: white; }
-.btn-status:hover { opacity: 0.8; }
+/* Botones con mejor aspecto */
+.btn-status {
+    border-radius: 5px;
+    letter-spacing: 1px;
+    transition: background 0.3s ease;
+}
