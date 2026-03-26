@@ -1,42 +1,55 @@
-/* ARANMEX - SISTEMA INTEGRADO V1.0 */
+/* ═══════════════════════════════════════════════
+   ARANMEX - SISTEMA INTEGRADO V1.1
+   ═══════════════════════════════════════════════ */
+
 :root {
-    --red-aranmex: #e31e24;
-    --black: #1a1a1a;
-    --white: #ffffff;
-    --gray-bg: #f4f7f6;
-    --gray-border: #dddddd;
-    --text-muted: #666666;
-    --shadow: 0 4px 12px rgba(0,0,0,0.1);
+    --red-aranmex:    #e31e24;
+    --black:          #1a1a1a;
+    --white:          #ffffff;
+    --gray-bg:        #f4f7f6;
+    --gray-border:    #dddddd;
+    --text-muted:     #666666;
+    --shadow:         0 4px 12px rgba(0,0,0,0.1);
+
+    /* ── Nuevas variables de estado ── */
+    --status-pendiente:  #f59e0b;
+    --status-aprobado:   #16a34a;
+    --status-rechazado:  #dc2626;
+    --status-proceso:    #2563eb;
+    --status-entregado:  #6b7280;
 }
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
+/* ── Reset ──────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-body { 
-    font-family: 'Segoe UI', Roboto, sans-serif; 
-    background: var(--gray-bg); 
-    color: var(--black); 
+body {
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    background: var(--gray-bg);
+    color: var(--black);
+    line-height: 1.5;
 }
 
-/* HEADER GLOBAL */
-.main-header { 
-    background: var(--white); 
-    padding: 15px 5%; 
-    display: flex; 
-    align-items: center; 
-    border-bottom: 4px solid var(--black); 
+/* ── Header global ──────────────────────────────── */
+.main-header {
+    background: var(--white);
+    padding: 15px 5%;
+    display: flex;
+    align-items: center;
+    border-bottom: 4px solid var(--black);
     gap: 20px;
     box-shadow: var(--shadow);
+    position: sticky;   /* ← Nuevo: header fijo al hacer scroll */
+    top: 0;
+    z-index: 100;
 }
-
 .logo-wrapper img { height: 55px; width: auto; display: block; }
-
-.header-text h1 { font-size: 1.4rem; text-transform: uppercase; letter-spacing: 1px; }
+.header-text h1  { font-size: 1.4rem; text-transform: uppercase; letter-spacing: 1px; }
 .header-text span { font-size: 0.8rem; color: var(--red-aranmex); font-weight: bold; }
 
-/* CONTENEDORES */
+/* ── Contenedores ───────────────────────────────── */
 .container { max-width: 1100px; margin: 40px auto; padding: 0 20px; }
 
-/* ESTILOS DEL PORTAL (INDEX) */
+/* ── Portal (index) ─────────────────────────────── */
 .portal-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -52,7 +65,8 @@ body {
     box-shadow: var(--shadow);
     cursor: pointer;
     border-top: 6px solid var(--black);
-    transition: 0.3s ease;
+    transition: transform 0.3s ease, background 0.3s ease, color 0.3s ease;
+    user-select: none;   /* ← Evita selección accidental de texto */
 }
 
 .portal-card.receptor { border-top-color: var(--red-aranmex); }
@@ -63,10 +77,17 @@ body {
     color: var(--white);
 }
 
-.portal-card h3 { margin-bottom: 10px; font-size: 1.3rem; }
-.portal-card p { font-size: 0.85rem; opacity: 0.8; }
+/* Mantener opacidad visible en hover */
+.portal-card:hover p { opacity: 1; }
+.portal-card:focus-visible {
+    outline: 3px solid var(--red-aranmex);
+    outline-offset: 2px;
+}
 
-/* ESTILOS DE FORMULARIOS (VGT, TUBOS, ETC) */
+.portal-card h3 { margin-bottom: 10px; font-size: 1.3rem; }
+.portal-card p  { font-size: 0.85rem; opacity: 0.8; transition: opacity 0.3s; }
+
+/* ── Formularios (vgt, tubos, inyectores, etc.) ─── */
 .styled-form {
     background: var(--white);
     padding: 30px;
@@ -87,32 +108,65 @@ body {
     margin-bottom: 8px;
     text-transform: uppercase;
     color: var(--text-muted);
+    letter-spacing: 0.5px;
 }
 
+/* ── Corrección 1: Estado base + focus en inputs ── */
 input, select, textarea {
     width: 100%;
     padding: 12px;
     border: 1px solid var(--gray-border);
     border-radius: 4px;
     font-size: 1rem;
+    font-family: inherit;
+    background: var(--white);
+    color: var(--black);
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-/* BOTONES */
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--red-aranmex);
+    box-shadow: 0 0 0 3px rgba(227, 30, 36, 0.15);
+}
+
+input:read-only, input:disabled {
+    background: var(--gray-bg);
+    color: var(--text-muted);
+    cursor: not-allowed;
+}
+
+textarea { resize: vertical; min-height: 80px; }
+
+/* ── Botones ─────────────────────────────────────── */
 .btn-status {
     width: 100%;
     padding: 15px;
     border: none;
     border-radius: 5px;
     font-weight: 800;
+    font-family: inherit;
+    font-size: 0.9rem;
     text-transform: uppercase;
     cursor: pointer;
-    transition: 0.3s;
+    transition: background 0.3s, opacity 0.3s;
+    letter-spacing: 0.5px;
 }
 
 .btn-primary { background: var(--black); color: var(--white); }
-.btn-primary:hover { background: var(--red-aranmex); }
+.btn-primary:hover:not(:disabled) { background: var(--red-aranmex); }
 
-/* TARJETAS DE PEDIDOS ACTIVOS */
+/* ── Corrección 2: Estado disabled (para validación de PIN) ── */
+.btn-status:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+/* Variantes de botón por tamaño */
+.btn-sm  { padding: 8px 16px;  font-size: 0.78rem; width: auto; }
+.btn-md  { padding: 12px 24px; font-size: 0.85rem; width: auto; }
+
+/* ── Tarjetas de pedidos activos ─────────────────── */
 .product-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -125,4 +179,50 @@ input, select, textarea {
     border-radius: 8px;
     border-left: 8px solid var(--black);
     box-shadow: var(--shadow);
+    transition: box-shadow 0.2s;
+}
+
+.product-card:hover {
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+/* ── Corrección 3: Variantes de estado para product-card ── */
+.product-card.pendiente  { border-left-color: var(--status-pendiente); }
+.product-card.aprobado   { border-left-color: var(--status-aprobado);  }
+.product-card.rechazado  { border-left-color: var(--status-rechazado); }
+.product-card.en-proceso { border-left-color: var(--status-proceso);   }
+.product-card.entregado  { border-left-color: var(--status-entregado); }
+
+/* ── Badges de estado ────────────────────────────── */
+.badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge.pendiente  { background: #fef3c7; color: #92400e; }
+.badge.aprobado   { background: #dcfce7; color: #14532d; }
+.badge.rechazado  { background: #fee2e2; color: #7f1d1d; }
+.badge.en-proceso { background: #dbeafe; color: #1e3a8a; }
+.badge.entregado  { background: #f3f4f6; color: #374151; }
+
+/* ── Utilidades ──────────────────────────────────── */
+.text-muted   { color: var(--text-muted); font-size: 0.85rem; }
+.text-right   { text-align: right; }
+.mt-10        { margin-top: 10px; }
+.mt-20        { margin-top: 20px; }
+.mb-20        { margin-bottom: 20px; }
+.flex-between { display: flex; justify-content: space-between; align-items: center; }
+
+/* ── Responsive ──────────────────────────────────── */
+@media (max-width: 600px) {
+    .container { margin: 20px auto; }
+    .styled-form { padding: 20px; }
+    .portal-card  { padding: 30px 15px; }
+    .main-header  { padding: 12px 4%; }
+    .header-text h1 { font-size: 1.1rem; }
 }
