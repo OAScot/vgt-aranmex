@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>SGC Aranmex | Requisición VGT Vertical</title>
+    <style>
+        :root { --red: #d32f2f; --blue: #1976d2; --dark: #1e1e1e; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; }
+        
+        /* Interfaz de Usuario */
+        .header-ui { background: var(--dark); color: white; padding: 15px 30px; display: flex; justify-content: space-between; border-bottom: 4px solid var(--red); }
+        .container { max-width: 800px; margin: 20px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        
+        .dest-toggle { display: flex; gap: 10px; margin-bottom: 25px; }
+        .btn-dest { flex: 1; padding: 15px; border: 2px solid #ddd; border-radius: 6px; cursor: pointer; text-align: center; font-weight: bold; transition: 0.3s; }
+        .btn-dest.active[data-t="ALM"] { border-color: var(--red); color: var(--red); background: #fff5f5; }
+        .btn-dest.active[data-t="CMP"] { border-color: var(--blue); color: var(--blue); background: #f0f7ff; }
+
+        .row { display: flex; gap: 20px; margin-bottom: 15px; }
+        .row div { flex: 1; }
+        label { display: block; font-weight: bold; font-size: 0.8rem; margin-bottom: 5px; color: #555; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; box-sizing: border-box; }
+        
+        .btn-submit { width: 100%; padding: 20px; border: none; border-radius: 6px; color: white; font-weight: bold; font-size: 1.1rem; cursor: pointer; margin-top: 10px; transition: 0.2s; }
+        .btn-submit:hover { opacity: 0.9; }
+    </style>
+</head>
+<body>
+
+<header class="header-ui">
+    <strong>ARANMEX AD | SGC PRODUCCIÓN</strong>
+    <a href="../index.html" style="color: #888; text-decoration: none; font-size: 0.8rem;">VOLVER</a>
+</header>
+
+<div class="container">
+    <div class="dest-toggle">
+        <div id="t-ALM" class="btn-dest active" data-t="ALM" onclick="setT('ALM')">📦 ALMACÉN (VGT-ALM)</div>
+        <div id="t-CMP" class="btn-dest" data-t="CMP" onclick="setT('CMP')">🛒 COMPRAS (VGT-CMP)</div>
+    </div>
+
+    <div class="row">
+        <div>
+            <label>RESPONSABLE (SOLICITANTE)</label>
+            <input type="text" id="resp" placeholder="Nombre completo">
+        </div>
+        <div>
+            <label>ORDEN / JORNADA</label>
+            <input type="text" id="jornada" placeholder="Ej: VGT-PROD-2603">
+        </div>
+    </div>
+
+    <div style="margin-bottom: 15px;">
+        <label>DETALLE DE INSUMOS (CANT | P/N | DESCRIPCIÓN | MODELO)</label>
+        <textarea id="lista" rows="10" placeholder="Escriba la lista de materiales aquí..."></textarea>
+    </div>
+
+    <div class="row">
+        <div>
+            <label>MOTIVO</label>
+            <select id="motivo">
+                <option value="PRODUCCIÓN">PRODUCCIÓN DIARIA</option>
+                <option value="GARANTÍA">GARANTÍA / RETRABAJO</option>
+                <option value="I+D">INVESTIGACIÓN Y DESARROLLO</option>
+            </select>
+        </div>
+        <div>
+            <label>PRIORIDAD</label>
+            <select id="prior">
+                <option value="NORMAL">NORMAL</option>
+                <option value="URGENTE">URGENTE (PARO DE LÍNEA)</option>
+            </select>
+        </div>
+    </div>
+
+    <button id="btnMain" class="btn-submit" style="background: var(--red);" onclick="imprimir()">
+        IMPRIMIR REQUISICIÓN VERTICAL
+    </button>
+</div>
+
+<script>
+    let dest = 'ALM';
+    
+    function setT(t) {
+        dest = t;
+        document.querySelectorAll('.btn-dest').forEach(b => b.classList.remove('active'));
+        document.getElementById('t-'+t).classList.add('active');
+        const btn = document.getElementById('btnMain');
+        btn.style.background = (t === 'ALM') ? '#d32f2f' : '#1976d2';
+        btn.innerText = `IMPRIMIR REQUISICIÓN VGT-${t}`;
+    }
+
+    function imprimir() {
+        const r = document.getElementById('resp').value;
+        const j = document.getElementById('jornada').value;
+        const l = document.getElementById('lista').value;
+        
+        if(!r || !j || !l) {
+            alert("Error: Complete los campos para trazabilidad.");
+            return;
+        }
+
+        const folio = `VGT-${dest}-${Date.now().toString().slice(-4)}`;
+        const win = window.open('', '_blank');
+
+        win.document.write(`
+            <html>
+            <head>
+                <title>Requisición ${folio}</title>
+                <style>
+                    @page { size: portrait; margin: 15mm; }
+                    body { font-family: 'Segoe UI', Arial; margin: 0; padding: 0; color: #111; line-height: 1.4; }
+                    .header-box { border: 2px solid #000; display: flex; margin-bottom: 20px; }
+                    .logo { width: 25%; border-right: 2px solid #000; padding: 15px; font-weight: bold; font-size: 20px; text-align: center; display: flex; align-items: center; justify-content: center; }
+                    .title { width: 50%; border-right: 2px solid #000; padding: 10px; text-align: center; font-weight: bold; text-transform: uppercase; display: flex; align-items: center; justify-content: center; }
+                    .meta { width: 25%; padding: 10px; font-size: 10px; }
+
+                    .info-section { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 12px; }
+                    .info-section td { border: 1px solid #000; padding: 8px; }
+
+                    .data-table { width: 100%; border-collapse: collapse; margin-bottom: 40px; }
+                    .data-table th { background: #eee; border: 2px solid #000; padding: 10px; font-size: 11px; text-align: left; }
+                    .data-table td { border: 2px solid #000; padding: 15px; font-size: 13px; vertical-align: top; height: 450px; font-family: 'Courier New', monospace; white-space: pre-wrap; }
+
+                    .footer-signs { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 30px; }
+                    .sign-box { border-top: 1.5px solid #000; text-align: center; font-size: 10px; padding-top: 8px; font-weight: bold; }
+                    .bottom-text { margin-top: 40px; text-align: center; font-size: 8px; color: #666; border-top: 0.5px solid #ccc; padding-top: 10px; }
+                </style>
+            </head>
+            <body>
+                <div class="header-box">
+                    <div class="logo">ARANMEX AD</div>
+                    <div class="title">REQUISICIÓN DE MATERIALES<br><small>SGC - ÁREA VGT</small></div>
+                    <div class="meta">
+                        <strong>FOLIO:</strong> ${folio}<br>
+                        <strong>FECHA:</strong> ${new Date().toLocaleDateString()}<br>
+                        <strong>DOC:</strong> F-PRD-VGT-01
+                    </div>
+                </div>
+
+                <table class="info-section">
+                    <tr>
+                        <td><strong>SOLICITANTE:</strong> ${r.toUpperCase()}</td>
+                        <td><strong>ORDEN/JORNADA:</strong> ${j.toUpperCase()}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>MOTIVO:</strong> ${document.getElementById('motivo').value}</td>
+                        <td><strong>PRIORIDAD:</strong> ${document.getElementById('prior').value}</td>
+                    </tr>
+                </table>
+
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>DETALLE DE MATERIALES (CANT | P/N | DESCRIPCIÓN | DESTINO)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>${l}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="footer-signs">
+                    <div class="sign-box">FIRMA SOLICITANTE</div>
+                    <div class="sign-box">ENTREGA ALMACÉN / COMPRAS</div>
+                </div>
+
+                <div class="bottom-text">
+                    Registro controlado bajo ISO 9001:2015. Aranmex AD Laboratorio Diesel y Turbos.
+                </div>
+
+                <script>
+                    window.onload = function() {
+                        window.print();
+                        setTimeout(function(){ window.close(); }, 500);
+                    };
+                <\/script>
+            </body>
+            </html>
+        `);
+        win.document.close();
+    }
+</script>
+
+</body>
+</html>
