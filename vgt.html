@@ -3,89 +3,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aranmex | Producción VGT</title>
+    <title>Aranmex | Sistema de Gestión de Calidad</title>
     <link rel="stylesheet" href="css/styles.css">
     <style>
-        .destino-selector {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        .destino-btn {
-            flex: 1;
-            padding: 12px;
-            border: 2px solid #ccc;
-            background: #f9f9f9;
-            cursor: pointer;
-            font-weight: bold;
-            text-align: center;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-        }
-        /* Estilo cuando Almacén está activo */
-        .destino-btn.active[data-destino="almacen"] {
-            border-color: #d32f2f;
-            background: #ffebee;
-            color: #d32f2f;
-        }
-        /* Estilo cuando Compras está activo */
-        .destino-btn.active[data-destino="compras"] {
-            border-color: #1976d2;
-            background: #e3f2fd;
-            color: #1976d2;
-        }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
-        .btn-primary { width: 100%; padding: 15px; font-size: 1.1rem; cursor: pointer; border: none; border-radius: 5px; color: white; transition: background 0.3s; }
+        .sgc-info { font-size: 0.8rem; color: #666; margin-bottom: 10px; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
+        .destino-selector { display: flex; gap: 10px; margin-bottom: 20px; }
+        .destino-btn { flex: 1; padding: 12px; border: 2px solid #ccc; background: #f9f9f9; cursor: pointer; font-weight: bold; text-align: center; border-radius: 8px; }
+        .destino-btn.active[data-destino="almacen"] { border-color: #d32f2f; background: #ffebee; color: #d32f2f; }
+        .destino-btn.active[data-destino="compras"] { border-color: #1976d2; background: #e3f2fd; color: #1976d2; }
+        .input-row { display: flex; gap: 10px; margin-bottom: 15px; }
+        .input-row div { flex: 1; }
+        textarea { font-family: 'Courier New', monospace; }
     </style>
 </head>
 <body>
     <header class="main-header">
-        <div class="logo-wrapper">
-            <img src="assets/logo-ad.png" alt="Aranmex AD">
-        </div>
+        <div class="logo-wrapper"><img src="assets/logo-ad.png" alt="Aranmex AD"></div>
         <div class="header-text">
-            <h1>Producción VGT</h1>
-            <span>Requisición de Material y Equipo</span>
+            <h1>Panel de Control de Producción</h1>
+            <span>ISO 9001:2015 / Lean Six Sigma</span>
         </div>
-        <a href="index.html" style="margin-left: auto; text-decoration: none; color: #d32f2f; font-weight: bold;">← Panel Principal</a>
+        <a href="index.html" style="margin-left: auto; text-decoration: none; color: #d32f2f; font-weight: bold;">← Salir</a>
     </header>
 
     <main class="container">
         <div class="styled-form">
-            <label><strong>¿A dónde va dirigida esta solicitud?</strong></label>
+            <div class="sgc-info">Código de Formato: <strong>F-PRD-VGT-01</strong> | Versión: 1.0</div>
+            
+            <label><strong>Tipo de Requisición (Destino):</strong></label>
             <div class="destino-selector">
-                <div class="destino-btn active" data-destino="almacen" onclick="setDestino('almacen')">
-                    📦 ALMACÉN<br><small>(Insumos diarios)</small>
+                <div class="destino-btn active" data-destino="almacen" onclick="setDestino('almacen')">📦 ALMACÉN INSUMOS</div>
+                <div class="destino-btn" data-destino="compras" onclick="setDestino('compras')">🛒 COMPRAS / EQUIPO</div>
+            </div>
+
+            <div class="input-row">
+                <div>
+                    <label>Solicitante (Nombre):</label>
+                    <input type="text" id="operador" placeholder="Nombre completo">
                 </div>
-                <div class="destino-btn" data-destino="compras" onclick="setDestino('compras')">
-                    🛒 COMPRAS<br><small>(Herramientas/Faltantes)</small>
+                <div>
+                    <label>Modelo / No. de Parte:</label>
+                    <input type="text" id="modelo" placeholder="Ej: VGT-750 / HE200WG">
                 </div>
             </div>
 
             <div class="form-group">
-                <label>Técnico Responsable</label>
-                <input type="text" id="operador" placeholder="Nombre del técnico">
+                <label id="label-material">Detalle de Materiales / Herramientas:</label>
+                <textarea id="lista-material" rows="5" placeholder="CANTIDAD | DESCRIPCIÓN | NÚMERO DE SERIE (Si aplica)"></textarea>
             </div>
 
-            <div class="form-group full-width">
-                <label id="label-material">Lista de Materiales (Insumos)</label>
-                <textarea id="lista-material" rows="5" placeholder="Cantidad | Descripción | Motivo (si es daño)"></textarea>
+            <div class="input-row">
+                <div>
+                    <label>Motivo / Lote:</label>
+                    <select id="motivo">
+                        <option value="Producción Diaria">Producción Diaria</option>
+                        <option value="Garantía de Cliente">Garantía de Cliente</option>
+                        <option value="Daño de Equipo">Daño de Equipo / Reposición</option>
+                        <option value="Investigación y Desarrollo">I+D (Proyectos)</option>
+                    </select>
+                </div>
+                <div>
+                    <label>Prioridad:</label>
+                    <select id="prioridad">
+                        <option value="Normal">Normal</option>
+                        <option value="Urgente">Urgente (Paro de Línea)</option>
+                    </select>
+                </div>
             </div>
 
-            <div class="form-group">
-                <label>Prioridad de Entrega</label>
-                <select id="prioridad">
-                    <option value="Normal">Normal</option>
-                    <option value="Urgente">Urgente (Línea Detenida)</option>
-                    <option value="Reparación">Mantenimiento / Reparación</option>
-                </select>
-            </div>
-
-            <div class="form-group full-width">
-                <button type="button" id="btn-imprimir" class="btn-primary" style="background: #d32f2f;" onclick="imprimirVale()">
-                    🖨️ Generar Vale para <span id="txt-destino">ALMACÉN</span>
-                </button>
-            </div>
+            <button type="button" id="btn-imprimir" class="btn-primary" style="background: #d32f2f; width:100%;" onclick="imprimirVale()">
+                🖨️ Generar Registro de Trazabilidad
+            </button>
         </div>
     </main>
 
@@ -94,16 +82,8 @@
 
         function setDestino(dest) {
             destinoActual = dest;
-            // Actualizar botones UI
             document.querySelectorAll('.destino-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelector(`[data-destino="${dest}"]`).classList.add('active');
-            
-            // Cambiar textos dinámicamente
-            document.getElementById('txt-destino').innerText = dest.toUpperCase();
-            document.getElementById('label-material').innerText = dest === 'almacen' ? 
-                "Lista de Materiales (Insumos)" : "Descripción de Equipo Dañado / Requerido";
-            
-            // Cambiar color del botón principal
             const btn = document.getElementById('btn-imprimir');
             btn.style.background = dest === 'almacen' ? '#d32f2f' : '#1976d2';
         }
@@ -111,80 +91,66 @@
         function imprimirVale() {
             const op = document.getElementById('operador').value;
             const mat = document.getElementById('lista-material').value;
+            const mod = document.getElementById('modelo').value;
 
-            if(!op || !mat) {
-                alert("Por favor completa los campos obligatorios."); 
-                return;
-            }
+            if(!op || !mat || !mod) { alert("Error: Todos los campos son obligatorios para trazabilidad ISO."); return; }
 
-            // --- GENERACIÓN DE FOLIO DINÁMICO ---
             const hoy = new Date();
-            const dia = hoy.getDate().toString().padStart(2, '0');
-            const mes = (hoy.getMonth() + 1).toString().padStart(2, '0');
-            const random = Math.floor(Math.random() * 999).toString().padStart(3, '0');
-            
-            // Prefijo según destino: VGT para almacén, COM para compras
-            const prefijo = (destinoActual === 'almacen') ? 'VGT' : 'COM';
-            const folioGenerado = `${prefijo}-${dia}${mes}-${random}`;
+            const folio = `${destinoActual === 'almacen' ? 'VGT' : 'COM'}-${hoy.getDate()}${hoy.getMonth()+1}-${Math.floor(Math.random()*999)}`;
 
-            const colorEncabezado = (destinoActual === 'almacen') ? '#d32f2f' : '#1976d2';
             const win = window.open('', '_blank');
-            
             win.document.write(`
                 <html>
                 <head>
-                    <title>Vale ${folioGenerado}</title>
+                    <title>Registro Aranmex ${folio}</title>
                     <style>
-                        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; width: 80mm; padding: 10px; border: 1px solid #000; margin: 0; }
-                        .header { text-align: center; color: white; background: ${colorEncabezado}; padding: 8px; margin-bottom: 10px; }
+                        body { font-family: Arial; width: 80mm; padding: 5px; border: 1px solid #000; font-size: 11px; }
+                        .header { display: flex; border-bottom: 2px solid #000; padding-bottom: 5px; margin-bottom: 10px; }
+                        .logo { width: 30%; font-weight: bold; font-size: 14px; }
+                        .title { width: 70%; text-align: right; }
+                        .section { margin-bottom: 8px; border: 1px solid #eee; padding: 3px; }
                         .bold { font-weight: bold; }
-                        .folio-box { border: 1px solid #000; padding: 2px 5px; background: #f0f0f0; font-family: monospace; }
-                        .divider { border-top: 1px dashed #000; margin: 10px 0; }
-                        .info-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 5px; }
-                        .footer { margin-top: 30px; text-align: center; font-size: 11px; }
-                        .firma { border-top: 1px solid #000; width: 85%; margin: 25px auto 5px; }
-                        .detalle-box { min-height: 100px; font-family: 'Courier New', Courier, monospace; font-size: 14px; background: #fafafa; padding: 5px; border: 0.5px solid #eee; }
+                        .footer { margin-top: 20px; font-size: 9px; text-align: center; }
+                        .firma { border-top: 1px solid #000; margin-top: 25px; width: 80%; margin-left: 10%; }
                     </style>
                 </head>
                 <body>
                     <div class="header">
-                        <h2 style="margin:0; font-size: 18px;">ARANMEX AD</h2>
-                        <p style="margin:0; font-size:12px; letter-spacing: 1px;">REQUISICIÓN: ${destinoActual.toUpperCase()}</p>
+                        <div class="logo">ARANMEX</div>
+                        <div class="title">
+                            <div class="bold">VALE DE REQUISICIÓN</div>
+                            <div>F-PRD-VGT-01 | Rev. 0</div>
+                        </div>
                     </div>
                     
-                    <div class="info-row">
-                        <span><span class="bold">Fecha:</span> ${hoy.toLocaleDateString()}</span>
-                        <span class="folio-box"><span class="bold">#</span> ${folioGenerado}</span>
-                    </div>
-                    
-                    <div style="font-size: 14px; margin-bottom: 4px;">
-                        <span class="bold">Solicita:</span> ${op.toUpperCase()}
-                    </div>
-                    <div style="font-size: 14px; margin-bottom: 4px;">
-                        <span class="bold">Prioridad:</span> ${document.getElementById('prioridad').value}
+                    <div class="section">
+                        <div style="display:flex; justify-content:space-between">
+                            <span><span class="bold">FOLIO:</span> ${folio}</span>
+                            <span><span class="bold">FECHA:</span> ${hoy.toLocaleDateString()}</span>
+                        </div>
                     </div>
 
-                    <div class="divider"></div>
-                    <div class="bold" style="font-size: 13px; margin-bottom: 5px;">DETALLE DEL PEDIDO:</div>
-                    <div class="detalle-box">
-                        ${mat.replace(/\n/g, '<br>')}
+                    <div class="section">
+                        <div><span class="bold">OPERADOR:</span> ${op.toUpperCase()}</div>
+                        <div><span class="bold">MODELO/PARTE:</span> ${mod.toUpperCase()}</div>
+                        <div><span class="bold">MOTIVO:</span> ${document.getElementById('motivo').value}</div>
                     </div>
-                    <div class="divider"></div>
+
+                    <div class="section" style="min-height: 80px;">
+                        <div class="bold">DESCRIPCIÓN DE MATERIAL:</div>
+                        <div style="font-family: monospace;">${mat.replace(/\n/g, '<br>')}</div>
+                    </div>
+
+                    <div style="display: flex; gap: 5px; margin-top: 30px;">
+                        <div style="flex:1; text-align:center;"><div class="firma"></div>Solicitante</div>
+                        <div style="flex:1; text-align:center;"><div class="firma"></div>Almacén / Compras</div>
+                    </div>
 
                     <div class="footer">
-                        <div class="firma"></div>
-                        <p style="margin:0">Firma Solicitante (Técnico)</p>
-                        <div class="firma"></div>
-                        <p style="margin:0">Autorización / Recibe</p>
-                        <p style="margin-top: 15px; font-style: italic; color: #666;">Documento generado para control interno Aranmex.</p>
+                        Este documento es un registro oficial del SGC de Aranmex.<br>
+                        "Calidad en cada componente."
                     </div>
-
-                    <script>
-                        window.onload = function() {
-                            window.print();
-                            // Opcional: window.close(); // Cierra la pestaña después de imprimir
-                        }
-                    <\/script>
+                    <script>window.print();<\/script>
                 </body>
                 </html>
             `);
