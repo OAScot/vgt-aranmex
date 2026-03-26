@@ -5,6 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aranmex | Producción VGT</title>
     <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .destino-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .destino-btn {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #ccc;
+            background: #f9f9f9;
+            cursor: pointer;
+            font-weight: bold;
+            text-align: center;
+            border-radius: 5px;
+        }
+        .destino-btn.active[data-destino="almacen"] {
+            border-color: #d32f2f;
+            background: #ffebee;
+            color: #d32f2f;
+        }
+        .destino-btn.active[data-destino="compras"] {
+            border-color: #1976d2;
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+    </style>
 </head>
 <body>
     <header class="main-header">
@@ -13,106 +40,103 @@
         </div>
         <div class="header-text">
             <h1>Producción VGT</h1>
-            <span>Salida de Material Diaria</span>
+            <span>Requisición de Material y Equipo</span>
         </div>
-        <a href="index.html" style="margin-left: auto; text-decoration: none; color: var(--red-aranmex); font-weight: bold;">← Panel Principal</a>
+        <a href="index.html" style="margin-left: auto; text-decoration: none; color: #d32f2f; font-weight: bold;">← Panel Principal</a>
     </header>
 
     <main class="container">
         <div class="styled-form">
+            <label><strong>¿A dónde va dirigida esta solicitud?</strong></label>
+            <div class="destino-selector">
+                <div class="destino-btn active" data-destino="almacen" onclick="setDestino('almacen')">📦 ALMACÉN<br><small>(Insumos diarios)</small></div>
+                <div class="destino-btn" data-destino="compras" onclick="setDestino('compras')">🛒 COMPRAS<br><small>(Herramientas/Faltantes)</small></div>
+            </div>
+
             <div class="form-group">
                 <label>Técnico Responsable</label>
-                <input type="text" id="operador" placeholder="Nombre completo">
+                <input type="text" id="operador" placeholder="Nombre del técnico">
             </div>
-            <div class="form-group">
-                <label>Lote / Orden del Día</label>
-                <input type="text" id="lote" placeholder="Ej: LOTE-260326">
-            </div>
-
-            <hr class="full-width" style="margin: 10px 0; border: 0; border-top: 1px solid #eee;">
 
             <div class="form-group full-width">
-                <label>Materiales Solicitados para Producción</label>
-                <textarea id="lista-material" rows="6" placeholder="Cantidad | Descripción | Observación&#10;Ej: 20 | Conectores VGT | -&#10;Ej: 15 | Sensores Magnéticos | -"></textarea>
-                <small style="color: #666;">* Tip: Puedes copiar y pegar tu lista de Excel aquí.</small>
+                <label id="label-material">Lista de Materiales / Equipos Dañados</label>
+                <textarea id="lista-material" rows="5" placeholder="Cantidad | Descripción | Motivo (si es daño)"></textarea>
             </div>
 
             <div class="form-group">
-                <label>Estado de Consumo</label>
-                <select id="tipo-consumo">
-                    <option value="Producción Nueva">Producción Nueva</option>
-                    <option value="Garantía / Retrabajo">Garantía / Retrabajo</option>
-                    <option value="Muestra / Pruebas">Muestra / Pruebas</option>
+                <label>Prioridad de Entrega</label>
+                <select id="prioridad">
+                    <option value="Normal">Normal</option>
+                    <option value="Urgente">Urgente (Línea Detenida)</option>
+                    <option value="Reparación">Mantenimiento / Reparación</option>
                 </select>
             </div>
 
             <div class="form-group full-width">
-                <button type="button" class="btn-status btn-primary" onclick="imprimirValeProduccion()">
-                    🖨️ Imprimir Vale de Despacho
+                <button type="button" id="btn-imprimir" class="btn-status btn-primary" onclick="imprimirVale()">
+                    🖨️ Generar Vale para <span id="txt-destino">ALMACÉN</span>
                 </button>
             </div>
         </div>
     </main>
 
     <script>
-        function imprimirValeProduccion() {
+        let destinoActual = 'almacen';
+
+        function setDestino(dest) {
+            destinoActual = dest;
+            // Actualizar botones UI
+            document.querySelectorAll('.destino-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`[data-destino="${dest}"]`).classList.add('active');
+            
+            // Cambiar texto del botón e interfaz
+            document.getElementById('txt-destino').innerText = dest.toUpperCase();
+            document.getElementById('label-material').innerText = dest === 'almacen' ? 
+                "Lista de Materiales (Insumos)" : "Descripción de Equipo Dañado / Requerido";
+            
+            const btn = document.getElementById('btn-imprimir');
+            btn.style.background = dest === 'almacen' ? '#d32f2f' : '#1976d2';
+        }
+
+        function imprimirVale() {
             const op = document.getElementById('operador').value;
             const mat = document.getElementById('lista-material').value;
 
             if(!op || !mat) {
-                alert("Por favor ingresa el nombre del técnico y los materiales.");
-                return;
+                alert("Por favor completa los campos."); return;
             }
 
-            const ticket = {
-                folio: "VGT-" + Math.floor(Date.now() / 100000),
-                fecha: new Date().toLocaleDateString(),
-                hora: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
-                operador: op,
-                lote: document.getElementById('lote').value || "N/A",
-                consumo: document.getElementById('tipo-consumo').value,
-                materiales: mat.replace(/\n/g, '<br>')
-            };
-
+            const colorEncabezado = destinoActual === 'almacen' ? '#d32f2f' : '#1976d2';
             const win = window.open('', '_blank');
             win.document.write(`
                 <html>
                 <head>
                     <style>
-                        body { font-family: 'Arial', sans-serif; width: 80mm; padding: 5px; margin: 0; font-size: 12px; }
-                        .center { text-align: center; }
+                        body { font-family: sans-serif; width: 80mm; padding: 10px; border: 1px solid #000; }
+                        .header { text-align: center; color: white; background: ${colorEncabezado}; padding: 5px; margin-bottom: 10px; }
                         .bold { font-weight: bold; }
-                        .divider { border-top: 1px dashed #000; margin: 8px 0; }
-                        .ticket-header { font-size: 16px; margin-bottom: 2px; }
-                        .table-header { display: flex; justify-content: space-between; margin-bottom: 5px; }
-                        .footer { margin-top: 25px; text-align: center; font-size: 10px; }
-                        .sign-space { margin-top: 30px; border-top: 1px solid #000; width: 80%; margin-left: 10%; }
+                        .divider { border-top: 1px dashed #000; margin: 10px 0; }
+                        .footer { margin-top: 30px; text-align: center; font-size: 10px; }
+                        .firma { border-top: 1px solid #000; width: 80%; margin: 20px auto 5px; }
                     </style>
                 </head>
                 <body>
-                    <div class="center">
-                        <div class="ticket-header bold">ARANMEX</div>
-                        <div>VALE DE SALIDA - VGT</div>
-                        <div class="bold">FOLIO: ${ticket.folio}</div>
+                    <div class="header">
+                        <h3 style="margin:0">ARANMEX - VGT</h3>
+                        <p style="margin:0; font-size:12px;">DESTINO: ${destinoActual.toUpperCase()}</p>
                     </div>
+                    <div><span class="bold">Fecha:</span> ${new Date().toLocaleDateString()}</div>
+                    <div><span class="bold">Solicita:</span> ${op}</div>
+                    <div><span class="bold">Prioridad:</span> ${document.getElementById('prioridad').value}</div>
                     <div class="divider"></div>
-                    <div class="table-header">
-                        <span>Fecha: ${ticket.fecha}</span>
-                        <span>Hora: ${ticket.hora}</span>
-                    </div>
-                    <div><span class="bold">Técnico:</span> ${ticket.operador}</div>
-                    <div><span class="bold">Lote:</span> ${ticket.lote}</div>
-                    <div><span class="bold">Tipo:</span> ${ticket.consumo}</div>
-                    <div class="divider"></div>
-                    <div class="bold">MATERIALES:</div>
-                    <div style="min-height: 100px; padding-top: 5px;">${ticket.materiales}</div>
+                    <div class="bold">DETALLE:</div>
+                    <div style="min-height:80px;">${mat.replace(/\n/g, '<br>')}</div>
                     <div class="divider"></div>
                     <div class="footer">
-                        <div class="sign-space"></div>
-                        <p>Firma Responsable VGT</p>
-                        <br>
-                        <div class="sign-space"></div>
-                        <p>Entrega Almacén</p>
+                        <div class="firma"></div>
+                        <p>Firma Solicitante</p>
+                        <div class="firma"></div>
+                        <p>Autorización / Recibe</p>
                     </div>
                 </body>
                 </html>
