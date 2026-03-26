@@ -19,26 +19,11 @@
 
     <main class="container">
         <div class="portal-grid">
-            <div class="portal-card" onclick="abrirLogin('vgt')">
-                <h3>VGTs</h3>
-                <p>Electrónica e Ingeniería</p>
-            </div>
-            <div class="portal-card" onclick="abrirLogin('turbos')">
-                <h3>TUBOS</h3>
-                <p>Producción</p>
-            </div>
-            <div class="portal-card" onclick="abrirLogin('inyectores')">
-                <h3>INYECTORES</h3>
-                <p>Diesel Lab</p>
-            </div>
-            <div class="portal-card" onclick="abrirLogin('compras')">
-                <h3>COMPRAS</h3>
-                <p>Gestión Externa</p>
-            </div>
-            <div class="portal-card" onclick="abrirLogin('almacen')">
-                <h3>ALMACÉN</h3>
-                <p>Stock Interno</p>
-            </div>
+            <div class="portal-card" onclick="abrirLogin('vgt')"><h3>VGTs</h3><p>Electrónica e Ingeniería</p></div>
+            <div class="portal-card" onclick="abrirLogin('turbos')"><h3>TUBOS</h3><p>Producción</p></div>
+            <div class="portal-card" onclick="abrirLogin('inyectores')"><h3>INYECTORES</h3><p>Diesel Lab</p></div>
+            <div class="portal-card receptor" onclick="abrirLogin('compras')"><h3>COMPRAS</h3><p>Gestión Externa</p></div>
+            <div class="portal-card receptor" onclick="abrirLogin('almacen')"><h3>ALMACÉN</h3><p>Stock Interno</p></div>
         </div>
     </main>
 
@@ -46,82 +31,83 @@
         <div style="background:white; padding:30px; border-radius:8px; width:300px; text-align:center;">
             <h3 id="login-title" style="margin-bottom:15px; text-transform:uppercase;">Acceso</h3>
             <input type="password" id="pin-input" placeholder="PIN" style="text-align:center; font-size:1.5rem; letter-spacing:5px; margin-bottom:20px; width: 100%; padding: 10px; border: 1px solid #ccc;">
-            <button class="btn-status btn-primary" id="btn-entrar">Entrar</button>
+            <button class="btn-status btn-primary" id="btn-entrar-click">Entrar</button>
             <button onclick="cerrarLogin()" style="background:none; border:none; color:grey; margin-top:15px; cursor:pointer; display: block; width: 100%;">Cancelar</button>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-client@2"></script>
+    <script src="https://unpkg.com/@supabase/supabase-client@2"></script>
 
-<script>
-    // Configuración con la librería Global (ya no es un módulo)
-    const { createClient } = supabase;
-    
-    const SUPABASE_URL = 'https://bhmkqevggjunssdddxjr.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJobWtxZXZnZ2p1bnNzZGRkeGpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NzE0OTQsImV4cCI6MjA5MDA0NzQ5NH0.HrGB8jtMEvIIPjpn2VsFDt6p18U1j8BtEfjR97WlbOw';
-    
-    const _supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+    <script>
+        let _supabase = null;
+        let areaSeleccionada = '';
 
-    let areaSeleccionada = '';
+        // SEGURO: Espera a que la librería cargue correctamente
+        const inicializarSupabase = setInterval(() => {
+            if (window.supabase) {
+                clearInterval(inicializarSupabase);
+                const { createClient } = window.supabase;
+                _supabase = createClient(
+                    'https://bhmkqevggjunssdddxjr.supabase.co', 
+                    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJobWtxZXZnZ2p1bnNzZGRkeGpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NzE0OTQsImV4cCI6MjA5MDA0NzQ5NH0.HrGB8jtMEvIIPjpn2VsFDt6p18U1j8BtEfjR97WlbOw'
+                );
+                console.log("Supabase listo.");
+            }
+        }, 100);
 
-    // Estas funciones ahora son globales automáticamente porque no estamos en un "module"
-    function abrirLogin(area) {
-        console.log("Abriendo acceso para:", area);
-        areaSeleccionada = area;
-        document.getElementById('login-title').innerText = "ACCESO " + area.toUpperCase();
-        document.getElementById('modal-login').style.display = 'flex';
-        document.getElementById('pin-input').value = '';
-        setTimeout(() => document.getElementById('pin-input').focus(), 100);
-    }
-
-    function cerrarLogin() {
-        document.getElementById('modal-login').style.display = 'none';
-    }
-
-    async function validarAcceso() {
-    const pinInput = document.getElementById('pin-input');
-    const pinIngresado = pinInput.value;
-    
-    if(!pinIngresado) return;
-
-    try {
-        const { data, error } = await _supabase
-            .from('accesos_aranmex')
-            .select('area')
-            .eq('area', areaSeleccionada)
-            .eq('pin', pinIngresado)
-            .maybeSingle();
-
-        if (data) {
-
-            const rutas = {
-                vgt: "vgt.html",
-                turbos: "turbos.html",
-                inyectores: "inyectores.html",
-                compras: "compras.html",
-                almacen: "almacen.html"
-            };
-
-            window.location.href = rutas[areaSeleccionada];
-
-        } else {
-            alert("PIN INCORRECTO");
-            pinInput.value = '';
+        function abrirLogin(area) {
+            areaSeleccionada = area;
+            document.getElementById('login-title').innerText = "ACCESO " + area.toUpperCase();
+            document.getElementById('modal-login').style.display = 'flex';
+            document.getElementById('pin-input').value = '';
+            setTimeout(() => document.getElementById('pin-input').focus(), 100);
         }
-    } catch (err) {
-        console.error("Error crítico:", err);
-        alert("Error de conexión con la base de datos.");
-    }
-}
-    // Configurar el botón entrar y la tecla Enter una vez que cargue el DOM
-    document.addEventListener('DOMContentLoaded', () => {
-        const btn = document.querySelector('#modal-login button.btn-primary');
-        if(btn) btn.onclick = validarAcceso;
-        
-        document.getElementById('pin-input').addEventListener('keypress', (e) => {
+
+        function cerrarLogin() {
+            document.getElementById('modal-login').style.display = 'none';
+        }
+
+        async function validarAcceso() {
+            if (!_supabase) {
+                alert("El sistema aún está cargando, espere un segundo...");
+                return;
+            }
+
+            const pinInput = document.getElementById('pin-input');
+            const pinIngresado = pinInput.value;
+            if(!pinIngresado) return;
+
+            try {
+                const { data, error } = await _supabase
+                    .from('accesos_aranmex')
+                    .select('area')
+                    .eq('area', areaSeleccionada)
+                    .eq('pin', pinIngresado)
+                    .maybeSingle();
+
+                if (data) {
+                    const rutas = {
+                        vgt: "vgt.html",
+                        turbos: "turbos.html",
+                        inyectores: "inyectores.html",
+                        compras: "compras.html",
+                        almacen: "almacen.html"
+                    };
+                    window.location.href = rutas[areaSeleccionada];
+                } else {
+                    alert("PIN INCORRECTO");
+                    pinInput.value = '';
+                }
+            } catch (err) {
+                alert("Error de conexión con la base de datos.");
+            }
+        }
+
+        // Eventos
+        document.getElementById('btn-entrar-click').onclick = validarAcceso;
+        document.getElementById('pin-input').onkeypress = (e) => {
             if (e.key === 'Enter') validarAcceso();
-        });
-    });
-</script>
+        };
+    </script>
 </body>
 </html>
