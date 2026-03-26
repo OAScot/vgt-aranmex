@@ -43,10 +43,10 @@
     </main>
 
     <div id="modal-login" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1000; justify-content:center; align-items:center;">
-        <div style="background:white; padding:30px; border-radius:8px; width:300px; text-align:center; box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
-            <h3 id="login-title" style="margin-bottom:15px; text-transform:uppercase; color: #000;"></h3>
+        <div style="background:white; padding:30px; border-radius:8px; width:300px; text-align:center;">
+            <h3 id="login-title" style="margin-bottom:15px; text-transform:uppercase;">Acceso</h3>
             <input type="password" id="pin-input" placeholder="PIN" style="text-align:center; font-size:1.5rem; letter-spacing:5px; margin-bottom:20px; width: 100%; padding: 10px; border: 1px solid #ccc;">
-            <button class="btn-status btn-primary" onclick="validarAcceso()">Entrar</button>
+            <button class="btn-status btn-primary" id="btn-entrar">Entrar</button>
             <button onclick="cerrarLogin()" style="background:none; border:none; color:grey; margin-top:15px; cursor:pointer; display: block; width: 100%;">Cancelar</button>
         </div>
     </div>
@@ -54,11 +54,7 @@
     <script type="module">
         import { createClient } from 'https://esm.sh/@supabase/supabase-client'
         
-        // Tus credenciales configuradas
-        const SUPABASE_URL = 'https://bhmkqevggjunssdddxjr.supabase.co'
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJobWtxZXZnZ2p1bnNzZGRkeGpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NzE0OTQsImV4cCI6MjA5MDA0NzQ5NH0.HrGB8jtMEvIIPjpn2VsFDt6p18U1j8BtEfjR97WlbOw'
-        
-        const _supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
+        const _supabase = createClient('https://bhmkqevggjunssdddxjr.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJobWtxZXZnZ2p1bnNzZGRkeGpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NzE0OTQsImV4cCI6MjA5MDA0NzQ5NH0.HrGB8jtMEvIIPjpn2VsFDt6p18U1j8BtEfjR97WlbOw')
 
         let areaSeleccionada = '';
 
@@ -74,17 +70,16 @@
             document.getElementById('modal-login').style.display = 'none';
         }
 
-        // Función para validar
-        window.validarAcceso = async () => {
+        async function validarAcceso() {
             const pinIngresado = document.getElementById('pin-input').value;
             if(!pinIngresado) return;
 
-            const { data, error } = await _supabase
+            const { data } = await _supabase
                 .from('accesos_aranmex')
                 .select('area')
                 .eq('area', areaSeleccionada)
                 .eq('pin', pinIngresado)
-                .maybeSingle(); // Usamos maybeSingle para evitar errores si no hay datos
+                .maybeSingle();
 
             if (data) {
                 window.location.href = areaSeleccionada + ".html";
@@ -94,10 +89,9 @@
             }
         }
 
-        // Permitir entrar con la tecla "Enter"
-        document.getElementById('pin-input').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') validarAcceso();
-        });
+        // Asignar eventos
+        document.getElementById('btn-entrar').onclick = validarAcceso;
+        document.getElementById('pin-input').onkeypress = (e) => { if (e.key === 'Enter') validarAcceso(); };
     </script>
 </body>
 </html>
