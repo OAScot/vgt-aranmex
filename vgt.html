@@ -3,67 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aranmex | VGT Requisiciones</title>
+    <title>Aranmex | Área VGT</title>
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
     <header class="main-header">
-        <div class="ad-logo-box">AD</div>
-        <div class="header-text"><h1>Aranmex</h1><span>Electrónica VGT - I+D</span></div>
+        <div class="logo-wrapper">
+            <img src="assets/logo-ad.png" alt="Aranmex AD">
+        </div>
+        <div class="header-text">
+            <h1>Área VGT</h1>
+            <span>Ingeniería y Desarrollo</span>
+        </div>
+        <a href="index.html" style="margin-left: auto; text-decoration: none; color: var(--red-aranmex); font-weight: bold;">← Salir</a>
     </header>
 
     <main class="container">
-        <form id="requisition-form" class="styled-form">
-            <div class="form-group"><label>Componente</label><input type="text" id="item-name" required></div>
-            <div class="form-group">
-                <label>Categoría</label>
-                <select id="category">
-                    <option value="Reemplazo">Parte / Reemplazo</option>
-                    <option value="Equipo">Estación / Equipo</option>
-                </select>
-            </div>
-            <div class="form-group full-width"><label>Justificación Técnica</label><textarea id="justification" rows="2"></textarea></div>
-            <button type="submit" class="btn-status btn-primary">Enviar a Compras</button>
-        </form>
+        <section class="form-container">
+            <h2>Nueva Requisición de Material</h2>
+            <br>
+            <form id="form-requisicion" class="styled-form">
+                <div class="form-group">
+                    <label>Solicitante</label>
+                    <input type="text" id="solicitante" placeholder="Nombre del técnico" required>
+                </div>
 
-        <div id="requests-container" class="product-grid"></div>
+                <div class="form-group">
+                    <label>Proyecto / Orden de Trabajo</label>
+                    <input type="text" id="proyecto" placeholder="Ej: Calibrador V4.0" required>
+                </div>
+
+                <div class="form-group full-width">
+                    <label>Descripción del Material / Componente</label>
+                    <textarea id="material" rows="3" placeholder="Ej: 5x ESP32 DevKit, 10x Resistencias 10k..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Urgencia</label>
+                    <select id="urgencia">
+                        <option value="Normal">Normal</option>
+                        <option value="Alta">Alta (Producción Detenida)</option>
+                        <option value="Stock">Reposición de Stock</option>
+                    </select>
+                </div>
+
+                <div class="form-group full-width">
+                    <button type="button" class="btn-status btn-primary" onclick="generarVale()">Generar Vale e Imprimir</button>
+                </div>
+            </form>
+        </section>
     </main>
 
-    <script type="module">
-        import { createClient } from 'https://esm.sh/@supabase/supabase-client'
-        const _supabase = createClient('https://bhmkqevggjunssdddxjr.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJobWtxZXZnZ2p1bnNzZGRkeGpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NzE0OTQsImV4cCI6MjA5MDA0NzQ5NH0.HrGB8jtMEvIIPjpn2VsFDt6p18U1j8BtEfjR97WlbOw')
+    <script>
+        function generarVale() {
+            // Capturar datos
+            const datos = {
+                folio: Math.floor(Math.random() * 9000) + 1000,
+                fecha: new Date().toLocaleString(),
+                solicitante: document.getElementById('solicitante').value,
+                proyecto: document.getElementById('proyecto').value,
+                material: document.getElementById('material').value,
+                urgencia: document.getElementById('urgencia').value
+            };
 
-        const form = document.getElementById('requisition-form');
-        
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            await _supabase.from('requisiciones').insert([{ 
-                item: document.getElementById('item-name').value,
-                categoria: document.getElementById('category').value,
-                justificacion: document.getElementById('justification').value
-            }]);
-            form.reset();
-            loadData();
-        });
+            if(!datos.solicitante || !datos.material) {
+                alert("Por favor llena los campos obligatorios.");
+                return;
+            }
 
-        async function loadData() {
-            const { data } = await _supabase.from('requisiciones').select('*').neq('estado', 'CERRADO').order('id', {ascending: false});
-            const container = document.getElementById('requests-container');
-            container.innerHTML = data.map(req => `
-                <div class="product-card">
-                    <div class="status-badge ${req.estado === 'PENDIENTE' ? 'status-required' : ''}">${req.estado}</div>
-                    <h2 class="product-name">${req.item}</h2>
-                    <p class="description">${req.justificacion}</p>
-                    ${req.estado === 'RECIBIDO' ? `<button class="btn-status btn-close" onclick="closeOrder(${req.id})">Cerrar Pedido (Recibido)</button>` : ''}
-                </div>
-            `).join('');
+            // Crear ventana de impresión
+            const ventana = window.open('', '_blank');
+            ventana.document.write(`
+                <html>
+                <head>
+                    <title>Vale de Requisición - Aranmex</title>
+                    <style>
+                        body { font-family: 'Courier New', Courier, monospace; padding: 20px; border: 1px solid #000; width: 500px; margin: auto; }
+                        .header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; }
+                        .content { margin-top: 20px; line-height: 1.6; }
+                        .footer { margin-top: 40px; display: flex; justify-content: space-between; }
+                        .firma { border-top: 1px solid #000; width: 150px; text-align: center; font-size: 0.8rem; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h2>ARANMEX AD</h2>
+                        <p>VALE DE REQUISICIÓN INTERNA</p>
+                        <p><strong>FOLIO: #${datos.folio}</strong></p>
+                    </div>
+                    <div class="content">
+                        <p><strong>Fecha:</strong> ${datos.fecha}</p>
+                        <p><strong>Área:</strong> VGT / INGENIERÍA</p>
+                        <p><strong>Solicita:</strong> ${datos.solicitante}</p>
+                        <p><strong>Proyecto:</strong> ${datos.proyecto}</p>
+                        <p><strong>Prioridad:</strong> ${datos.urgencia}</p>
+                        <hr>
+                        <p><strong>MATERIAL SOLICITADO:</strong></p>
+                        <p>${datos.material.replace(/\n/g, '<br>')}</p>
+                    </div>
+                    <div class="footer">
+                        <div class="firma"><br>Solicitante</div>
+                        <div class="firma"><br>Autoriza (I+D)</div>
+                        <div class="firma"><br>Almacén</div>
+                    </div>
+                    <script>window.print();<\/script>
+                </body>
+                </html>
+            `);
+            ventana.document.close();
         }
-
-        window.closeOrder = async (id) => {
-            await _supabase.from('requisiciones').update({ estado: 'CERRADO' }).eq('id', id);
-            loadData();
-        };
-        loadData();
     </script>
 </body>
 </html>
