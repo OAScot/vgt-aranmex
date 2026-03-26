@@ -23,7 +23,7 @@
                 <h3>VGTs</h3>
                 <p>Electrónica e Ingeniería</p>
             </div>
-            <div class="portal-card" onclick="abrirLogin('tubos')">
+            <div class="portal-card" onclick="abrirLogin('turbos')">
                 <h3>TUBOS</h3>
                 <p>Producción</p>
             </div>
@@ -31,11 +31,11 @@
                 <h3>INYECTORES</h3>
                 <p>Diesel Lab</p>
             </div>
-            <div class="portal-card receptor" onclick="abrirLogin('compras')">
+            <div class="portal-card" onclick="abrirLogin('compras')">
                 <h3>COMPRAS</h3>
                 <p>Gestión Externa</p>
             </div>
-            <div class="portal-card receptor" onclick="abrirLogin('almacen')">
+            <div class="portal-card" onclick="abrirLogin('almacen')">
                 <h3>ALMACÉN</h3>
                 <p>Stock Interno</p>
             </div>
@@ -79,31 +79,40 @@
     }
 
     async function validarAcceso() {
-        const pinInput = document.getElementById('pin-input');
-        const pinIngresado = pinInput.value;
-        
-        if(!pinIngresado) return;
+    const pinInput = document.getElementById('pin-input');
+    const pinIngresado = pinInput.value;
+    
+    if(!pinIngresado) return;
 
-        try {
-            const { data, error } = await _supabase
-                .from('accesos_aranmex')
-                .select('area')
-                .eq('area', areaSeleccionada)
-                .eq('pin', pinIngresado)
-                .maybeSingle();
+    try {
+        const { data, error } = await _supabase
+            .from('accesos_aranmex')
+            .select('area')
+            .eq('area', areaSeleccionada)
+            .eq('pin', pinIngresado)
+            .maybeSingle();
 
-            if (data) {
-                window.location.href = areaSeleccionada + ".html";
-            } else {
-                alert("PIN INCORRECTO");
-                pinInput.value = '';
-            }
-        } catch (err) {
-            console.error("Error crítico:", err);
-            alert("Error de conexión con la base de datos.");
+        if (data) {
+
+            const rutas = {
+                vgt: "vgt.html",
+                turbos: "turbos.html",
+                inyectores: "inyectores.html",
+                compras: "compras.html",
+                almacen: "almacen.html"
+            };
+
+            window.location.href = rutas[areaSeleccionada];
+
+        } else {
+            alert("PIN INCORRECTO");
+            pinInput.value = '';
         }
+    } catch (err) {
+        console.error("Error crítico:", err);
+        alert("Error de conexión con la base de datos.");
     }
-
+}
     // Configurar el botón entrar y la tecla Enter una vez que cargue el DOM
     document.addEventListener('DOMContentLoaded', () => {
         const btn = document.querySelector('#modal-login button.btn-primary');
