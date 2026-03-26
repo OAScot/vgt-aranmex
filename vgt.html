@@ -99,51 +99,66 @@
         }
 
         function imprimirVale() {
-            const op = document.getElementById('operador').value;
-            const mat = document.getElementById('lista-material').value;
+    const op = document.getElementById('operador').value;
+    const mat = document.getElementById('lista-material').value;
 
-            if(!op || !mat) {
-                alert("Por favor completa los campos."); return;
-            }
+    if(!op || !mat) {
+        alert("Por favor completa los campos."); return;
+    }
 
-            const colorEncabezado = destinoActual === 'almacen' ? '#d32f2f' : '#1976d2';
-            const win = window.open('', '_blank');
-            win.document.write(`
-                <html>
-                <head>
-                    <style>
-                        body { font-family: sans-serif; width: 80mm; padding: 10px; border: 1px solid #000; }
-                        .header { text-align: center; color: white; background: ${colorEncabezado}; padding: 5px; margin-bottom: 10px; }
-                        .bold { font-weight: bold; }
-                        .divider { border-top: 1px dashed #000; margin: 10px 0; }
-                        .footer { margin-top: 30px; text-align: center; font-size: 10px; }
-                        .firma { border-top: 1px solid #000; width: 80%; margin: 20px auto 5px; }
-                    </style>
-                </head>
-                <body>
-                    <div class="header">
-                        <h3 style="margin:0">ARANMEX - VGT</h3>
-                        <p style="margin:0; font-size:12px;">DESTINO: ${destinoActual.toUpperCase()}</p>
-                    </div>
-                    <div><span class="bold">Fecha:</span> ${new Date().toLocaleDateString()}</div>
-                    <div><span class="bold">Solicita:</span> ${op}</div>
-                    <div><span class="bold">Prioridad:</span> ${document.getElementById('prioridad').value}</div>
-                    <div class="divider"></div>
-                    <div class="bold">DETALLE:</div>
-                    <div style="min-height:80px;">${mat.replace(/\n/g, '<br>')}</div>
-                    <div class="divider"></div>
-                    <div class="footer">
-                        <div class="firma"></div>
-                        <p>Firma Solicitante</p>
-                        <div class="firma"></div>
-                        <p>Autorización / Recibe</p>
-                    </div>
-                </body>
-                </html>
-            `);
-            win.document.close();
-            win.print();
-        }
+    // --- AQUÍ VA EL CÓDIGO DEL FOLIO ESTRUCTURADO ---
+    const hoy = new Date();
+    const dia = hoy.getDate().toString().padStart(2, '0');
+    const mes = (hoy.getMonth() + 1).toString().padStart(2, '0');
+    const random = Math.floor(Math.random() * 999).toString().padStart(3, '0');
+    
+    // Resultado: VGT-2603-742 (Prefijo-DíaMes-Aleatorio)
+    const folioGenerado = `VGT-${dia}${mes}-${random}`;
+    // ------------------------------------------------
+
+    const colorEncabezado = destinoActual === 'almacen' ? '#d32f2f' : '#1976d2';
+    const win = window.open('', '_blank');
+    
+    win.document.write(`
+        <html>
+        <head>
+            <style>
+                body { font-family: sans-serif; width: 80mm; padding: 10px; border: 1px solid #000; }
+                .header { text-align: center; color: white; background: ${colorEncabezado}; padding: 5px; margin-bottom: 10px; }
+                .bold { font-weight: bold; }
+                .folio-box { border: 1px solid #000; padding: 2px 5px; background: #eee; }
+                .divider { border-top: 1px dashed #000; margin: 10px 0; }
+                .footer { margin-top: 30px; text-align: center; font-size: 10px; }
+                .firma { border-top: 1px solid #000; width: 80%; margin: 20px auto 5px; }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h3 style="margin:0">ARANMEX - VGT</h3>
+                <p style="margin:0; font-size:12px;">DESTINO: ${destinoActual.toUpperCase()}</p>
+            </div>
+            <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                <span><span class="bold">Fecha:</span> ${hoy.toLocaleDateString()}</span>
+                <span class="folio-box"><span class="bold">FOLIO:</span> ${folioGenerado}</span>
+            </div>
+            <div><span class="bold">Solicita:</span> ${op}</div>
+            <div><span class="bold">Prioridad:</span> ${document.getElementById('prioridad').value}</div>
+            <div class="divider"></div>
+            <div class="bold">DETALLE:</div>
+            <div style="min-height:80px; font-family: monospace;">${mat.replace(/\n/g, '<br>')}</div>
+            <div class="divider"></div>
+            <div class="footer">
+                <div class="firma"></div>
+                <p>Firma Solicitante</p>
+                <div class="firma"></div>
+                <p>Autorización / Recibe</p>
+            </div>
+        </body>
+        </html>
+    `);
+    win.document.close();
+    win.print();
+}
     </script>
 </body>
 </html>
