@@ -3,154 +3,269 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aranmex | Sistema de Gestión de Calidad</title>
-    <link rel="stylesheet" href="css/styles.css">
+    <title>SGC Aranmex | Control VGT</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
-        .sgc-info { font-size: 0.8rem; color: #666; margin-bottom: 10px; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
-        .destino-selector { display: flex; gap: 10px; margin-bottom: 20px; }
-        .destino-btn { flex: 1; padding: 12px; border: 2px solid #ccc; background: #f9f9f9; cursor: pointer; font-weight: bold; text-align: center; border-radius: 8px; }
-        .destino-btn.active[data-destino="almacen"] { border-color: #d32f2f; background: #ffebee; color: #d32f2f; }
-        .destino-btn.active[data-destino="compras"] { border-color: #1976d2; background: #e3f2fd; color: #1976d2; }
-        .input-row { display: flex; gap: 10px; margin-bottom: 15px; }
-        .input-row div { flex: 1; }
-        textarea { font-family: 'Courier New', monospace; }
+        :root {
+            --primary-red: #d32f2f;
+            --primary-blue: #1976d2;
+            --bg-light: #f4f7f6;
+            --text-dark: #2c3e50;
+            --border-color: #d1d8e0;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--text-dark);
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Header Estilo Corporativo */
+        .sgc-header {
+            background: #1a1a1a;
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 4px solid var(--primary-red);
+        }
+
+        .sgc-header h1 { margin: 0; font-size: 1.5rem; letter-spacing: 1px; }
+        .sgc-header span { font-size: 0.8rem; color: #aaa; }
+
+        /* Contenedor Principal */
+        .main-content {
+            max-width: 900px;
+            margin: 2rem auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .form-banner {
+            background: #f8f9fa;
+            padding: 15px 25px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+        }
+
+        .form-body { padding: 30px; }
+
+        /* Selector de Destino (Visualmente Robusto) */
+        .selector-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .btn-dest {
+            padding: 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 6px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s;
+            filter: grayscale(1);
+            opacity: 0.6;
+        }
+
+        .btn-dest.active {
+            filter: grayscale(0);
+            opacity: 1;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .btn-dest[data-dest="almacen"].active { border-color: var(--primary-red); background: #fff5f5; color: var(--primary-red); }
+        .btn-dest[data-dest="compras"].active { border-color: var(--primary-blue); background: #f0f7ff; color: var(--primary-blue); }
+
+        /* Inputs y Labels */
+        .field-group { margin-bottom: 20px; }
+        label { display: block; font-weight: 700; margin-bottom: 8px; font-size: 0.9rem; text-transform: uppercase; }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+
+        textarea { font-family: 'Roboto Mono', monospace; background: #fafafa; }
+
+        .row { display: flex; gap: 20px; }
+        .row > div { flex: 1; }
+
+        /* Botón de Acción */
+        .btn-submit {
+            background: var(--primary-red);
+            color: white;
+            border: none;
+            padding: 18px;
+            width: 100%;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+        }
+
+        .btn-submit:hover { filter: brightness(1.2); }
     </style>
 </head>
 <body>
-    <header class="main-header">
-        <div class="logo-wrapper"><img src="assets/logo-ad.png" alt="Aranmex AD"></div>
-        <div class="header-text">
-            <h1>Panel de Control de Producción</h1>
-            <span>ISO 9001:2015 / Lean Six Sigma</span>
+
+    <header class="sgc-header">
+        <div>
+            <h1>ARANMEX AD <small style="font-size: 0.6rem; vertical-align: middle;">SGC</small></h1>
+            <span>SISTEMA DE GESTIÓN DE CALIDAD - VGT</span>
         </div>
-        <a href="index.html" style="margin-left: auto; text-decoration: none; color: #d32f2f; font-weight: bold;">← Salir</a>
+        <div style="text-align: right;">
+            <a href="index.html" style="color: white; text-decoration: none; font-size: 0.8rem; border: 1px solid #444; padding: 5px 10px; border-radius: 4px;">CERRAR SESIÓN</a>
+        </div>
     </header>
 
-    <main class="container">
-        <div class="styled-form">
-            <div class="sgc-info">Código de Formato: <strong>F-PRD-VGT-01</strong> | Versión: 1.0</div>
-            
-            <label><strong>Tipo de Requisición (Destino):</strong></label>
-            <div class="destino-selector">
-                <div class="destino-btn active" data-destino="almacen" onclick="setDestino('almacen')">📦 ALMACÉN INSUMOS</div>
-                <div class="destino-btn" data-destino="compras" onclick="setDestino('compras')">🛒 COMPRAS / EQUIPO</div>
+    <main class="main-content">
+        <div class="form-banner">
+            <span>DOCUMENTO: <strong>F-PRD-VGT-01</strong></span>
+            <span>ESTADO: <strong style="color: green;">CONTROLADO</strong></span>
+        </div>
+
+        <div class="form-body">
+            <label>SELECCIONE DESTINO DE REQUISICIÓN:</label>
+            <div class="selector-grid">
+                <div id="opt-almacen" class="btn-dest active" data-dest="almacen" onclick="cambiarDestino('almacen')">
+                    <div style="font-size: 1.5rem;">📦</div>
+                    <strong>ALMACÉN</strong><br><small>INSUMOS DE PRODUCCIÓN</small>
+                </div>
+                <div id="opt-compras" class="btn-dest" data-dest="compras" onclick="cambiarDestino('compras')">
+                    <div style="font-size: 1.5rem;">🛒</div>
+                    <strong>COMPRAS</strong><br><small>EQUIPO Y HERRAMIENTA</small>
+                </div>
             </div>
 
-            <div class="input-row">
-                <div>
-                    <label>Solicitante (Nombre):</label>
+            <div class="row">
+                <div class="field-group">
+                    <label>TÉCNICO SOLICITANTE</label>
                     <input type="text" id="operador" placeholder="Nombre completo">
                 </div>
-                <div>
-                    <label>Modelo / No. de Parte:</label>
-                    <input type="text" id="modelo" placeholder="Ej: VGT-750 / HE200WG">
+                <div class="field-group">
+                    <label>MODELO / NO. PARTE</label>
+                    <input type="text" id="modelo" placeholder="Ej: VGT-750-AD">
                 </div>
             </div>
 
-            <div class="form-group">
-                <label id="label-material">Detalle de Materiales / Herramientas:</label>
-                <textarea id="lista-material" rows="5" placeholder="CANTIDAD | DESCRIPCIÓN | NÚMERO DE SERIE (Si aplica)"></textarea>
+            <div class="field-group">
+                <label id="lbl-detalle">LISTA DE MATERIALES / DESCRIPCIÓN DEL DAÑO</label>
+                <textarea id="materiales" rows="5" placeholder="CANTIDAD | DESCRIPCIÓN | OBSERVACIONES"></textarea>
             </div>
 
-            <div class="input-row">
-                <div>
-                    <label>Motivo / Lote:</label>
+            <div class="row">
+                <div class="field-group">
+                    <label>MOTIVO DE SALIDA</label>
                     <select id="motivo">
                         <option value="Producción Diaria">Producción Diaria</option>
-                        <option value="Garantía de Cliente">Garantía de Cliente</option>
-                        <option value="Daño de Equipo">Daño de Equipo / Reposición</option>
-                        <option value="Investigación y Desarrollo">I+D (Proyectos)</option>
+                        <option value="Garantía">Garantía / Retrabajo</option>
+                        <option value="Falla de Equipo">Falla de Herramienta</option>
+                        <option value="Desarrollo">Investigación y Desarrollo (I+D)</option>
                     </select>
                 </div>
-                <div>
-                    <label>Prioridad:</label>
+                <div class="field-group">
+                    <label>PRIORIDAD</label>
                     <select id="prioridad">
-                        <option value="Normal">Normal</option>
-                        <option value="Urgente">Urgente (Paro de Línea)</option>
+                        <option value="NORMAL">NORMAL</option>
+                        <option value="URGENTE">URGENTE (PARO DE LÍNEA)</option>
                     </select>
                 </div>
             </div>
 
-            <button type="button" id="btn-imprimir" class="btn-primary" style="background: #d32f2f; width:100%;" onclick="imprimirVale()">
-                🖨️ Generar Registro de Trazabilidad
+            <button class="btn-submit" id="main-btn" onclick="ejecutarVale()">
+                GENERAR REGISTRO E IMPRIMIR
             </button>
         </div>
     </main>
 
     <script>
-        let destinoActual = 'almacen';
+        let destino = 'almacen';
 
-        function setDestino(dest) {
-            destinoActual = dest;
-            document.querySelectorAll('.destino-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelector(`[data-destino="${dest}"]`).classList.add('active');
-            const btn = document.getElementById('btn-imprimir');
-            btn.style.background = dest === 'almacen' ? '#d32f2f' : '#1976d2';
+        function cambiarDestino(d) {
+            destino = d;
+            document.querySelectorAll('.btn-dest').forEach(b => b.classList.remove('active'));
+            document.getElementById('opt-' + d).classList.add('active');
+            
+            const btn = document.getElementById('main-btn');
+            const lbl = document.getElementById('lbl-detalle');
+            
+            if(d === 'almacen') {
+                btn.style.backgroundColor = '#d32f2f';
+                lbl.innerText = "LISTA DE MATERIALES (INSUMOS)";
+            } else {
+                btn.style.backgroundColor = '#1976d2';
+                lbl.innerText = "DESCRIPCIÓN DE EQUIPO / FALLA DE HERRAMIENTA";
+            }
         }
 
-        function imprimirVale() {
+        function ejecutarVale() {
             const op = document.getElementById('operador').value;
-            const mat = document.getElementById('lista-material').value;
+            const mat = document.getElementById('materiales').value;
             const mod = document.getElementById('modelo').value;
 
-            if(!op || !mat || !mod) { alert("Error: Todos los campos son obligatorios para trazabilidad ISO."); return; }
+            if(!op || !mat || !mod) {
+                alert("ERROR DE TRAZABILIDAD: Todos los campos son requeridos para cumplir con ISO 9001.");
+                return;
+            }
 
             const hoy = new Date();
-            const folio = `${destinoActual === 'almacen' ? 'VGT' : 'COM'}-${hoy.getDate()}${hoy.getMonth()+1}-${Math.floor(Math.random()*999)}`;
-
+            const folio = `${destino === 'almacen' ? 'VGT' : 'COM'}-${hoy.getDate()}${hoy.getMonth()+1}-${Math.floor(Math.random()*999)}`;
+            
             const win = window.open('', '_blank');
             win.document.write(`
                 <html>
                 <head>
-                    <title>Registro Aranmex ${folio}</title>
                     <style>
-                        body { font-family: Arial; width: 80mm; padding: 5px; border: 1px solid #000; font-size: 11px; }
-                        .header { display: flex; border-bottom: 2px solid #000; padding-bottom: 5px; margin-bottom: 10px; }
-                        .logo { width: 30%; font-weight: bold; font-size: 14px; }
-                        .title { width: 70%; text-align: right; }
-                        .section { margin-bottom: 8px; border: 1px solid #eee; padding: 3px; }
+                        body { font-family: 'Courier New', monospace; width: 80mm; padding: 10px; border: 2px solid #000; }
+                        .ticket-header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 10px; }
+                        .ticket-body { font-size: 12px; }
                         .bold { font-weight: bold; }
-                        .footer { margin-top: 20px; font-size: 9px; text-align: center; }
-                        .firma { border-top: 1px solid #000; margin-top: 25px; width: 80%; margin-left: 10%; }
+                        .footer { margin-top: 30px; font-size: 10px; text-align: center; }
+                        .firma { border-top: 1px solid #000; margin-top: 20px; width: 80%; margin-left: 10%; }
                     </style>
                 </head>
                 <body>
-                    <div class="header">
-                        <div class="logo">ARANMEX</div>
-                        <div class="title">
-                            <div class="bold">VALE DE REQUISICIÓN</div>
-                            <div>F-PRD-VGT-01 | Rev. 0</div>
-                        </div>
+                    <div class="ticket-header">
+                        <h2 style="margin:0">ARANMEX AD</h2>
+                        <div style="font-size:10px">REGISTRO DE TRAZABILIDAD</div>
+                        <div class="bold">FOLIO: ${folio}</div>
                     </div>
-                    
-                    <div class="section">
-                        <div style="display:flex; justify-content:space-between">
-                            <span><span class="bold">FOLIO:</span> ${folio}</span>
-                            <span><span class="bold">FECHA:</span> ${hoy.toLocaleDateString()}</span>
-                        </div>
-                    </div>
-
-                    <div class="section">
-                        <div><span class="bold">OPERADOR:</span> ${op.toUpperCase()}</div>
-                        <div><span class="bold">MODELO/PARTE:</span> ${mod.toUpperCase()}</div>
+                    <div class="ticket-body">
+                        <div>FECHA: ${hoy.toLocaleDateString()} ${hoy.toLocaleTimeString()}</div>
+                        <div>ÁREA: VGT / INGENIERÍA</div>
+                        <hr>
+                        <div><span class="bold">SOLICITA:</span> ${op.toUpperCase()}</div>
+                        <div><span class="bold">MOD/PARTE:</span> ${mod.toUpperCase()}</div>
                         <div><span class="bold">MOTIVO:</span> ${document.getElementById('motivo').value}</div>
+                        <div><span class="bold">PRIORIDAD:</span> ${document.getElementById('prioridad').value}</div>
+                        <hr>
+                        <div class="bold">MATERIALES:</div>
+                        <div style="padding-left: 5px;">${mat.replace(/\n/g, '<br>')}</div>
                     </div>
-
-                    <div class="section" style="min-height: 80px;">
-                        <div class="bold">DESCRIPCIÓN DE MATERIAL:</div>
-                        <div style="font-family: monospace;">${mat.replace(/\n/g, '<br>')}</div>
-                    </div>
-
-                    <div style="display: flex; gap: 5px; margin-top: 30px;">
-                        <div style="flex:1; text-align:center;"><div class="firma"></div>Solicitante</div>
-                        <div style="flex:1; text-align:center;"><div class="firma"></div>Almacén / Compras</div>
-                    </div>
-
                     <div class="footer">
-                        Este documento es un registro oficial del SGC de Aranmex.<br>
-                        "Calidad en cada componente."
+                        <div class="firma">SOLICITA</div>
+                        <div class="firma">ENTREGA (ALMACÉN/COMPRAS)</div>
+                        <br>
+                        "LA CALIDAD ES NUESTRO ESTÁNDAR"
                     </div>
-                    <script>window.print();<\/script>
+                    <script>window.onload = function(){ window.print(); window.close(); } <\/script>
                 </body>
                 </html>
             `);
