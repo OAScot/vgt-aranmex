@@ -2,11 +2,12 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>SGC Aranmex | Vale Materials y Herramientas VGT</title>
+    <title>SGC Aranmex | Requisición Materiales y Herramientas VGT </title>
     <style>
         :root { --red: #d32f2f; --blue: #1976d2; --dark: #1e1e1e; }
         body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; }
         
+        /* Interfaz de Usuario */
         .header-ui { background: var(--dark); color: white; padding: 15px 30px; display: flex; justify-content: space-between; border-bottom: 4px solid var(--red); }
         .container { max-width: 1000px; margin: 20px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         
@@ -27,52 +28,52 @@
 <body>
 
 <header class="header-ui">
-    <strong>ARANMEX AD | SISTEMA DE REQUISICIONES</strong>
+    <strong>ARANMEX AD | SISTEMA DE GESTIÓN DE CALIDAD</strong>
     <a href="../index.html" style="color: #888; text-decoration: none; font-size: 0.8rem;">VOLVER AL PANEL</a>
 </header>
 
 <div class="container">
     <div class="dest-toggle">
-        <div id="t-ALM" class="btn-dest active" data-t="ALM" onclick="setT('ALM')">📦 ALMACÉN (VGT-ALM)</div>
-        <div id="t-CMP" class="btn-dest" data-t="CMP" onclick="setT('CMP')">🛒 COMPRAS (VGT-CMP)</div>
+        <div id="t-ALM" class="btn-dest active" data-t="ALM" onclick="setT('ALM')">📦 REQUISICIÓN ALMACÉN (ALM)</div>
+        <div id="t-CMP" class="btn-dest" data-t="CMP" onclick="setT('CMP')">🛒 REQUISICIÓN COMPRAS (CMP)</div>
     </div>
 
     <div class="row">
         <div>
-            <label>RESPONSABLE DE ÁREA</label>
-            <input type="text" id="resp" placeholder="Nombre del solicitante">
+            <label>RESPONSABLE DE ÁREA (SOLICITANTE)</label>
+            <input type="text" id="resp" placeholder="Nombre completo">
         </div>
         <div>
             <label>ID JORNADA / LOTE DE PRODUCCIÓN</label>
-            <input type="text" id="jornada" placeholder="Ej: PROD-260326">
+            <input type="text" id="jornada" placeholder="Ej: VGT-PROD-260326">
         </div>
     </div>
 
     <div style="margin-bottom: 15px;">
-        <label>DETALLE DE MATERIALES (CANT | P/N | DESCRIPCIÓN | MODELO DESTINO)</label>
-        <textarea id="lista" rows="6" placeholder="Escriba aquí los materiales..."></textarea>
+        <label>DETALLE DE CARGA (CANTIDAD | P/N | DESCRIPCIÓN | MODELO DESTINO)</label>
+        <textarea id="lista" rows="6" placeholder="Ej: 8 | 6203-ZZ | Balero | Actuador V4.0"></textarea>
     </div>
 
     <div class="row">
         <div>
-            <label>MOTIVO / TIPO DE CARGA</label>
+            <label>MOTIVO / PROCESO</label>
             <select id="motivo">
                 <option value="PRODUCCIÓN">PRODUCCIÓN DEL DÍA</option>
                 <option value="GARANTÍA">GARANTÍA / RETRABAJO</option>
-                <option value="I+D">INVESTIGACIÓN Y DESARROLLO</option>
+                <option value="I+D">INVESTIGACIÓN Y DESARROLLO (R&D)</option>
             </select>
         </div>
         <div>
             <label>PRIORIDAD</label>
             <select id="prior">
-                <option value="NORMAL">NORMAL</option>
+                <option value="NORMAL">FLUJO NORMAL</option>
                 <option value="URGENTE">URGENTE (PARO DE LÍNEA)</option>
             </select>
         </div>
     </div>
 
     <button id="btnMain" class="btn-submit" style="background: var(--red);" onclick="imprimir()">
-        GENERAR REQUISICIÓN VGT-ALM
+        GENERAR VALE HORIZONTAL VGT-ALM
     </button>
 </div>
 
@@ -85,7 +86,7 @@
         document.getElementById('t-'+t).classList.add('active');
         const btn = document.getElementById('btnMain');
         btn.style.background = (t === 'ALM') ? '#d32f2f' : '#1976d2';
-        btn.innerText = `GENERAR REQUISICIÓN VGT-${t}`;
+        btn.innerText = `GENERAR VALE HORIZONTAL VGT-${t}`;
     }
 
     function imprimir() {
@@ -94,34 +95,36 @@
         const l = document.getElementById('lista').value;
         
         if(!r || !j || !l) {
-            alert("Error: Ingrese todos los campos para trazabilidad.");
+            alert("Error: Ingrese todos los campos para el registro de trazabilidad.");
             return;
         }
 
+        // Generación de Folio Único para Trazabilidad
         const folio = `VGT-${dest}-${Date.now().toString().slice(-4)}`;
         const win = window.open('', '_blank');
 
         win.document.write(`
             <html>
             <head>
-                <title>Registro ${folio}</title>
+                <title>Vale ${folio}</title>
                 <style>
                     @page { size: landscape; margin: 10mm; }
-                    body { font-family: 'Segoe UI', Arial; margin: 0; padding: 5px; color: #333; }
+                    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 5px; color: #222; }
                     .header-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
-                    .header-table td { border: 1.5px solid #000; padding: 12px; }
-                    .logo { font-size: 22px; font-weight: bold; text-align: center; width: 20%; }
-                    .title { text-align: center; width: 60%; font-weight: bold; font-size: 18px; text-transform: uppercase; }
-                    .meta { width: 20%; font-size: 10px; line-height: 1.4; }
+                    .header-table td { border: 2px solid #000; padding: 10px; }
+                    .logo { font-size: 20px; font-weight: bold; text-align: center; width: 20%; background: #f9f9f9; }
+                    .title { text-align: center; width: 60%; font-weight: bold; font-size: 16px; text-transform: uppercase; }
+                    .meta { width: 20%; font-size: 10px; line-height: 1.5; }
                     
-                    .info-bar { display: flex; justify-content: space-between; padding: 10px; background: #f9f9f9; border: 1px solid #000; font-size: 12px; margin-bottom: 10px; }
+                    .info-bar { display: flex; justify-content: space-between; padding: 12px; border: 1.5px solid #000; font-size: 11px; margin-bottom: 10px; background: #fafafa; }
                     
-                    table.data-table { width: 100%; border-collapse: collapse; }
-                    table.data-table th { background: #e0e0e0; border: 1.5px solid #000; padding: 8px; font-size: 11px; text-transform: uppercase; }
-                    table.data-table td { border: 1.5px solid #000; padding: 10px; font-size: 12px; vertical-align: top; font-family: 'Courier New', monospace; height: 250px; white-space: pre-wrap; }
+                    table.data-table { width: 100%; border-collapse: collapse; min-height: 300px; }
+                    table.data-table th { background: #eee; border: 2px solid #000; padding: 8px; font-size: 10px; text-transform: uppercase; }
+                    table.data-table td { border: 2px solid #000; padding: 12px; font-size: 12px; vertical-align: top; font-family: 'Courier New', monospace; white-space: pre-wrap; height: 200px; }
                     
-                    .footer-signs { display: flex; justify-content: space-around; margin-top: 40px; }
-                    .sign-box { border-top: 1.5px solid #000; width: 220px; text-align: center; font-size: 10px; padding-top: 8px; font-weight: bold; }
+                    .footer-signs { display: flex; justify-content: space-around; margin-top: 45px; }
+                    .sign-box { border-top: 2px solid #000; width: 220px; text-align: center; font-size: 10px; padding-top: 10px; font-weight: bold; }
+                    .disclaimer { margin-top: 30px; font-size: 8px; text-align: center; color: #555; font-style: italic; }
                 </style>
             </head>
             <body>
@@ -139,7 +142,7 @@
 
                 <div class="info-bar">
                     <span><strong>RESPONSABLE:</strong> ${r.toUpperCase()}</span>
-                    <span><strong>JORNADA:</strong> ${j.toUpperCase()}</span>
+                    <span><strong>ID JORNADA:</strong> ${j.toUpperCase()}</span>
                     <span><strong>MOTIVO:</strong> ${document.getElementById('motivo').value}</span>
                     <span><strong>PRIORIDAD:</strong> ${document.getElementById('prior').value}</span>
                 </div>
@@ -147,7 +150,7 @@
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>DETALLE DE CARGA AGRUPADA (CANTIDAD | P/N | DESCRIPCIÓN | DESTINO)</th>
+                            <th>DETALLE DE CARGA AGRUPADA (CANTIDAD | P/N | DESCRIPCIÓN | MODELO DESTINO)</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -159,18 +162,18 @@
 
                 <div class="footer-signs">
                     <div class="sign-box">FIRMA SOLICITANTE</div>
-                    <div class="sign-box">VALIDACIÓN INGENIERÍA</div>
+                    <div class="sign-box">VALIDACIÓN INGENIERÍA / I+D</div>
                     <div class="sign-box">ENTREGA ALMACÉN / COMPRAS</div>
                 </div>
 
-                <div style="margin-top: 25px; font-size: 9px; text-align: center; color: #555; border-top: 0.5px solid #ccc; padding-top: 10px;">
-                    Este documento es un registro oficial de Aranmex AD. Prohibida su reproducción parcial sin autorización del Jefe de I+D.
+                <div class="disclaimer">
+                    Este documento es un registro controlado bajo la norma ISO 9001:2015 de Aranmex AD. Toda salida de material debe ser debidamente firmada.
                 </div>
 
                 <script>
                     window.onload = function() {
                         window.print();
-                        setTimeout(() => { window.close(); }, 500);
+                        setTimeout(function(){ window.close(); }, 500);
                     };
                 <\/script>
             </body>
