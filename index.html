@@ -54,38 +54,28 @@
     <script type="module">
     import { createClient } from 'https://esm.sh/@supabase/supabase-client'
     
-    // Configuración de Supabase
     const _supabase = createClient('https://bhmkqevggjunssdddxjr.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJobWtxZXZnZ2p1bnNzZGRkeGpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NzE0OTQsImV4cCI6MjA5MDA0NzQ5NH0.HrGB8jtMEvIIPjpn2VsFDt6p18U1j8BtEfjR97WlbOw')
 
     let areaSeleccionada = '';
 
-    // Exportamos las funciones al objeto global 'window' para que los botones las vean
+    // Forzamos el registro global inmediato
     window.abrirLogin = (area) => {
+        console.log("Intentando abrir login para:", area); // Esto saldrá en F12 si funciona
         areaSeleccionada = area;
-        const modal = document.getElementById('modal-login');
-        const title = document.getElementById('login-title');
-        const input = document.getElementById('pin-input');
-        
-        if(modal && title && input) {
-            title.innerText = "Acceso " + area.toUpperCase();
-            modal.style.display = 'flex';
-            input.value = '';
-            input.focus();
-        }
-    }
+        document.getElementById('login-title').innerText = "ACCESO " + area.toUpperCase();
+        document.getElementById('modal-login').style.display = 'flex';
+        document.getElementById('pin-input').value = '';
+        setTimeout(() => document.getElementById('pin-input').focus(), 100);
+    };
 
     window.cerrarLogin = () => {
-        const modal = document.getElementById('modal-login');
-        if(modal) modal.style.display = 'none';
-    }
+        document.getElementById('modal-login').style.display = 'none';
+    };
 
     window.validarAcceso = async () => {
-        const pinInput = document.getElementById('pin-input');
-        const pinIngresado = pinInput.value;
-        
+        const pinIngresado = document.getElementById('pin-input').value;
         if(!pinIngresado) return;
 
-        // Consulta de seguridad a Supabase
         const { data, error } = await _supabase
             .from('accesos_aranmex')
             .select('area')
@@ -94,19 +84,15 @@
             .maybeSingle();
 
         if (data) {
-            // Éxito: Redirigir a la subpágina correspondiente
             window.location.href = areaSeleccionada + ".html";
         } else {
-            alert("PIN INCORRECTO PARA " + areaSeleccionada.toUpperCase());
-            pinInput.value = '';
-            pinInput.focus();
+            alert("PIN INCORRECTO");
+            document.getElementById('pin-input').value = '';
         }
-    }
+    };
 
-    // Escuchar la tecla Enter en el input
-    document.getElementById('pin-input').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') window.validarAcceso();
-    });
+    // Vincular el botón "Entrar" del modal específicamente
+    document.querySelector('#modal-login button.btn-primary').onclick = window.validarAcceso;
 </script>
 </body>
 </html>
