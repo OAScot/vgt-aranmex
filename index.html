@@ -51,9 +51,11 @@
         </div>
     </div>
 
-    <script type="module">
-    // Cambiamos a jspm para evitar el error 404 de esm.sh
-    import { createClient } from 'https://jspm.dev/@supabase/supabase-client';
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-client@2"></script>
+
+<script>
+    // Configuración con la librería Global (ya no es un módulo)
+    const { createClient } = supabase;
     
     const SUPABASE_URL = 'https://bhmkqevggjunssdddxjr.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJobWtxZXZnZ2p1bnNzZGRkeGpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NzE0OTQsImV4cCI6MjA5MDA0NzQ5NH0.HrGB8jtMEvIIPjpn2VsFDt6p18U1j8BtEfjR97WlbOw';
@@ -62,29 +64,24 @@
 
     let areaSeleccionada = '';
 
-    // Función para abrir el modal
+    // Estas funciones ahora son globales automáticamente porque no estamos en un "module"
     function abrirLogin(area) {
+        console.log("Abriendo acceso para:", area);
         areaSeleccionada = area;
-        const modal = document.getElementById('modal-login');
-        const titulo = document.getElementById('login-title');
-        if (modal && titulo) {
-            titulo.innerText = "ACCESO " + area.toUpperCase();
-            modal.style.display = 'flex';
-            const input = document.getElementById('pin-input');
-            input.value = '';
-            setTimeout(() => input.focus(), 100);
-        }
+        document.getElementById('login-title').innerText = "ACCESO " + area.toUpperCase();
+        document.getElementById('modal-login').style.display = 'flex';
+        document.getElementById('pin-input').value = '';
+        setTimeout(() => document.getElementById('pin-input').focus(), 100);
     }
 
-    // Función para cerrar el modal
     function cerrarLogin() {
-        const modal = document.getElementById('modal-login');
-        if (modal) modal.style.display = 'none';
+        document.getElementById('modal-login').style.display = 'none';
     }
 
-    // Función para validar contra Supabase
     async function validarAcceso() {
-        const pinIngresado = document.getElementById('pin-input').value;
+        const pinInput = document.getElementById('pin-input');
+        const pinIngresado = pinInput.value;
+        
         if(!pinIngresado) return;
 
         try {
@@ -99,22 +96,22 @@
                 window.location.href = areaSeleccionada + ".html";
             } else {
                 alert("PIN INCORRECTO");
-                document.getElementById('pin-input').value = '';
+                pinInput.value = '';
             }
         } catch (err) {
-            console.error("Error de conexión:", err);
-            alert("Error al conectar con el servidor de seguridad.");
+            console.error("Error crítico:", err);
+            alert("Error de conexión con la base de datos.");
         }
     }
 
-    // EXPORTACIÓN GLOBAL: Esto es lo que quita el error de "not defined"
-    window.abrirLogin = abrirLogin;
-    window.cerrarLogin = cerrarLogin;
-    window.validarAcceso = validarAcceso;
-
-    // Configurar tecla Enter
-    document.getElementById('pin-input').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') validarAcceso();
+    // Configurar el botón entrar y la tecla Enter una vez que cargue el DOM
+    document.addEventListener('DOMContentLoaded', () => {
+        const btn = document.querySelector('#modal-login button.btn-primary');
+        if(btn) btn.onclick = validarAcceso;
+        
+        document.getElementById('pin-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') validarAcceso();
+        });
     });
 </script>
 </body>
