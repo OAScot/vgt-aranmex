@@ -13,24 +13,29 @@
         }
         .destino-btn {
             flex: 1;
-            padding: 10px;
+            padding: 12px;
             border: 2px solid #ccc;
             background: #f9f9f9;
             cursor: pointer;
             font-weight: bold;
             text-align: center;
-            border-radius: 5px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
         }
+        /* Estilo cuando Almacén está activo */
         .destino-btn.active[data-destino="almacen"] {
             border-color: #d32f2f;
             background: #ffebee;
             color: #d32f2f;
         }
+        /* Estilo cuando Compras está activo */
         .destino-btn.active[data-destino="compras"] {
             border-color: #1976d2;
             background: #e3f2fd;
             color: #1976d2;
         }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .btn-primary { width: 100%; padding: 15px; font-size: 1.1rem; cursor: pointer; border: none; border-radius: 5px; color: white; transition: background 0.3s; }
     </style>
 </head>
 <body>
@@ -49,8 +54,12 @@
         <div class="styled-form">
             <label><strong>¿A dónde va dirigida esta solicitud?</strong></label>
             <div class="destino-selector">
-                <div class="destino-btn active" data-destino="almacen" onclick="setDestino('almacen')">📦 ALMACÉN<br><small>(Insumos diarios)</small></div>
-                <div class="destino-btn" data-destino="compras" onclick="setDestino('compras')">🛒 COMPRAS<br><small>(Herramientas/Faltantes)</small></div>
+                <div class="destino-btn active" data-destino="almacen" onclick="setDestino('almacen')">
+                    📦 ALMACÉN<br><small>(Insumos diarios)</small>
+                </div>
+                <div class="destino-btn" data-destino="compras" onclick="setDestino('compras')">
+                    🛒 COMPRAS<br><small>(Herramientas/Faltantes)</small>
+                </div>
             </div>
 
             <div class="form-group">
@@ -59,7 +68,7 @@
             </div>
 
             <div class="form-group full-width">
-                <label id="label-material">Lista de Materiales / Equipos Dañados</label>
+                <label id="label-material">Lista de Materiales (Insumos)</label>
                 <textarea id="lista-material" rows="5" placeholder="Cantidad | Descripción | Motivo (si es daño)"></textarea>
             </div>
 
@@ -73,7 +82,7 @@
             </div>
 
             <div class="form-group full-width">
-                <button type="button" id="btn-imprimir" class="btn-status btn-primary" onclick="imprimirVale()">
+                <button type="button" id="btn-imprimir" class="btn-primary" style="background: #d32f2f;" onclick="imprimirVale()">
                     🖨️ Generar Vale para <span id="txt-destino">ALMACÉN</span>
                 </button>
             </div>
@@ -89,76 +98,98 @@
             document.querySelectorAll('.destino-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelector(`[data-destino="${dest}"]`).classList.add('active');
             
-            // Cambiar texto del botón e interfaz
+            // Cambiar textos dinámicamente
             document.getElementById('txt-destino').innerText = dest.toUpperCase();
             document.getElementById('label-material').innerText = dest === 'almacen' ? 
                 "Lista de Materiales (Insumos)" : "Descripción de Equipo Dañado / Requerido";
             
+            // Cambiar color del botón principal
             const btn = document.getElementById('btn-imprimir');
             btn.style.background = dest === 'almacen' ? '#d32f2f' : '#1976d2';
         }
 
         function imprimirVale() {
-    const op = document.getElementById('operador').value;
-    const mat = document.getElementById('lista-material').value;
+            const op = document.getElementById('operador').value;
+            const mat = document.getElementById('lista-material').value;
 
-    if(!op || !mat) {
-        alert("Por favor completa los campos."); return;
-    }
+            if(!op || !mat) {
+                alert("Por favor completa los campos obligatorios."); 
+                return;
+            }
 
-    // --- AQUÍ VA EL CÓDIGO DEL FOLIO ESTRUCTURADO ---
-    const hoy = new Date();
-    const dia = hoy.getDate().toString().padStart(2, '0');
-    const mes = (hoy.getMonth() + 1).toString().padStart(2, '0');
-    const random = Math.floor(Math.random() * 999).toString().padStart(3, '0');
-    
-    // Resultado: VGT-2603-742 (Prefijo-DíaMes-Aleatorio)
-    const folioGenerado = `VGT-${dia}${mes}-${random}`;
-    // ------------------------------------------------
+            // --- GENERACIÓN DE FOLIO DINÁMICO ---
+            const hoy = new Date();
+            const dia = hoy.getDate().toString().padStart(2, '0');
+            const mes = (hoy.getMonth() + 1).toString().padStart(2, '0');
+            const random = Math.floor(Math.random() * 999).toString().padStart(3, '0');
+            
+            // Prefijo según destino: VGT para almacén, COM para compras
+            const prefijo = (destinoActual === 'almacen') ? 'VGT' : 'COM';
+            const folioGenerado = `${prefijo}-${dia}${mes}-${random}`;
 
-    const colorEncabezado = destinoActual === 'almacen' ? '#d32f2f' : '#1976d2';
-    const win = window.open('', '_blank');
-    
-    win.document.write(`
-        <html>
-        <head>
-            <style>
-                body { font-family: sans-serif; width: 80mm; padding: 10px; border: 1px solid #000; }
-                .header { text-align: center; color: white; background: ${colorEncabezado}; padding: 5px; margin-bottom: 10px; }
-                .bold { font-weight: bold; }
-                .folio-box { border: 1px solid #000; padding: 2px 5px; background: #eee; }
-                .divider { border-top: 1px dashed #000; margin: 10px 0; }
-                .footer { margin-top: 30px; text-align: center; font-size: 10px; }
-                .firma { border-top: 1px solid #000; width: 80%; margin: 20px auto 5px; }
-            </style>
-        </head>
-        <body>
-            <div class="header">
-                <h3 style="margin:0">ARANMEX - VGT</h3>
-                <p style="margin:0; font-size:12px;">DESTINO: ${destinoActual.toUpperCase()}</p>
-            </div>
-            <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
-                <span><span class="bold">Fecha:</span> ${hoy.toLocaleDateString()}</span>
-                <span class="folio-box"><span class="bold">FOLIO:</span> ${folioGenerado}</span>
-            </div>
-            <div><span class="bold">Solicita:</span> ${op}</div>
-            <div><span class="bold">Prioridad:</span> ${document.getElementById('prioridad').value}</div>
-            <div class="divider"></div>
-            <div class="bold">DETALLE:</div>
-            <div style="min-height:80px; font-family: monospace;">${mat.replace(/\n/g, '<br>')}</div>
-            <div class="divider"></div>
-            <div class="footer">
-                <div class="firma"></div>
-                <p>Firma Solicitante</p>
-                <div class="firma"></div>
-                <p>Autorización / Recibe</p>
-            </div>
-        </body>
-        </html>
-    `);
-    win.document.close();
-    win.print();
-}
+            const colorEncabezado = (destinoActual === 'almacen') ? '#d32f2f' : '#1976d2';
+            const win = window.open('', '_blank');
+            
+            win.document.write(`
+                <html>
+                <head>
+                    <title>Vale ${folioGenerado}</title>
+                    <style>
+                        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; width: 80mm; padding: 10px; border: 1px solid #000; margin: 0; }
+                        .header { text-align: center; color: white; background: ${colorEncabezado}; padding: 8px; margin-bottom: 10px; }
+                        .bold { font-weight: bold; }
+                        .folio-box { border: 1px solid #000; padding: 2px 5px; background: #f0f0f0; font-family: monospace; }
+                        .divider { border-top: 1px dashed #000; margin: 10px 0; }
+                        .info-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 5px; }
+                        .footer { margin-top: 30px; text-align: center; font-size: 11px; }
+                        .firma { border-top: 1px solid #000; width: 85%; margin: 25px auto 5px; }
+                        .detalle-box { min-height: 100px; font-family: 'Courier New', Courier, monospace; font-size: 14px; background: #fafafa; padding: 5px; border: 0.5px solid #eee; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h2 style="margin:0; font-size: 18px;">ARANMEX AD</h2>
+                        <p style="margin:0; font-size:12px; letter-spacing: 1px;">REQUISICIÓN: ${destinoActual.toUpperCase()}</p>
+                    </div>
+                    
+                    <div class="info-row">
+                        <span><span class="bold">Fecha:</span> ${hoy.toLocaleDateString()}</span>
+                        <span class="folio-box"><span class="bold">#</span> ${folioGenerado}</span>
+                    </div>
+                    
+                    <div style="font-size: 14px; margin-bottom: 4px;">
+                        <span class="bold">Solicita:</span> ${op.toUpperCase()}
+                    </div>
+                    <div style="font-size: 14px; margin-bottom: 4px;">
+                        <span class="bold">Prioridad:</span> ${document.getElementById('prioridad').value}
+                    </div>
+
+                    <div class="divider"></div>
+                    <div class="bold" style="font-size: 13px; margin-bottom: 5px;">DETALLE DEL PEDIDO:</div>
+                    <div class="detalle-box">
+                        ${mat.replace(/\n/g, '<br>')}
+                    </div>
+                    <div class="divider"></div>
+
+                    <div class="footer">
+                        <div class="firma"></div>
+                        <p style="margin:0">Firma Solicitante (Técnico)</p>
+                        <div class="firma"></div>
+                        <p style="margin:0">Autorización / Recibe</p>
+                        <p style="margin-top: 15px; font-style: italic; color: #666;">Documento generado para control interno Aranmex.</p>
+                    </div>
+
+                    <script>
+                        window.onload = function() {
+                            window.print();
+                            // Opcional: window.close(); // Cierra la pestaña después de imprimir
+                        }
+                    <\/script>
+                </body>
+                </html>
+            `);
+            win.document.close();
+        }
     </script>
 </body>
 </html>
