@@ -3,49 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aranmex | Portal de Requisiciones</title>
+    <title>Aranmex | Portal</title>
     <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-
     <header class="main-header">
         <div class="logo-wrapper">
             <img src="assets/logo-ad.png" alt="Aranmex AD">
         </div>
         <div class="header-text">
             <h1>Aranmex</h1>
-            <span>Sistema Integrado de Requisiciones</span>
+            <span>Gestión de Pedidos e Inventarios</span>
         </div>
     </header>
 
     <main class="container">
-        <h2 style="text-align: center; margin-bottom: 40px; text-transform: uppercase; letter-spacing: 1px;">Seleccione su Área de Ingreso</h2>
-        
         <div class="portal-grid">
-            <div class="portal-card" onclick="verificarAcceso('vgt')">
-                <h3>Área VGT</h3>
-                <p>Laboratorio I+D</p>
+            <div class="portal-card" onclick="acceso('vgt')">
+                <h3>VGT</h3>
+                <p>Ingeniería I+D</p>
             </div>
-            <div class="portal-card" onclick="verificarAcceso('tubos')">
-                <h3>Área Tubos</h3>
-                <p>Producción / Taller</p>
+            <div class="portal-card" onclick="acceso('tubos')">
+                <h3>TUBOS</h3>
+                <p>Producción</p>
             </div>
-            <div class="portal-card" onclick="verificarAcceso('inyectores')">
-                <h3>Área Inyectores</h3>
-                <p>Laboratorio Diesel</p>
+            <div class="portal-card" onclick="acceso('inyectores')">
+                <h3>INYECTORES</h3>
+                <p>Diesel Lab</p>
             </div>
             
-            <div class="portal-card receptor" onclick="verificarAcceso('compras')">
-                <h3>Compras</h3>
+            <div class="portal-card receptor" onclick="acceso('compras')">
+                <h3>COMPRAS</h3>
                 <p>Gestión Externa</p>
             </div>
-            <div class="portal-card receptor" onclick="verificarAcceso('almacen')">
-                <h3>Almacén</h3>
-                <p>Inventario Interno</p>
+            <div class="portal-card receptor" onclick="acceso('almacen')">
+                <h3>ALMACÉN</h3>
+                <p>Stock Interno</p>
             </div>
         </div>
     </main>
 
-    <script src="js/portal.js"></script>
+    <script>
+        // Lógica de acceso integrada para evitar fallos de carga de archivos JS
+        const rutas = {
+            'vgt': { pin: '1234', url: 'vgt.html' },
+            'tubos': { pin: '2345', url: 'tubos.html' },
+            'inyectores': { pin: '3456', url: 'inyectores.html' },
+            'compras': { pin: '9999', url: 'compras.html' },
+            'almacen': { pin: '8888', url: 'almacen.html' }
+        };
+
+        function acceso(area) {
+            const pin = prompt("Ingrese PIN de acceso:");
+            if (pin === rutas[area].pin) {
+                window.location.href = rutas[area].url;
+            } else if (pin !== null) {
+                alert("PIN incorrecto");
+            }
+        }
+    </script>
 </body>
 </html>
