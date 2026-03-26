@@ -3,185 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SGC Aranmex | Control VGT</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <title>SGC Aranmex | Control de Salidas VGT</title>
     <style>
-        :root {
-            --primary-red: #d32f2f;
-            --primary-blue: #1976d2;
-            --bg-light: #f4f7f6;
-            --text-dark: #2c3e50;
-            --border-color: #d1d8e0;
-        }
-
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: var(--bg-light);
-            color: var(--text-dark);
-            margin: 0;
-            padding: 0;
-        }
-
-        /* Header Estilo Corporativo */
-        .sgc-header {
-            background: #1a1a1a;
-            color: white;
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 4px solid var(--primary-red);
-        }
-
-        .sgc-header h1 { margin: 0; font-size: 1.5rem; letter-spacing: 1px; }
-        .sgc-header span { font-size: 0.8rem; color: #aaa; }
-
-        /* Contenedor Principal */
-        .main-content {
-            max-width: 900px;
-            margin: 2rem auto;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-
-        .form-banner {
-            background: #f8f9fa;
-            padding: 15px 25px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.85rem;
-        }
-
-        .form-body { padding: 30px; }
-
-        /* Selector de Destino (Visualmente Robusto) */
-        .selector-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .btn-dest {
-            padding: 15px;
-            border: 2px solid var(--border-color);
-            border-radius: 6px;
-            text-align: center;
-            cursor: pointer;
-            transition: 0.2s;
-            filter: grayscale(1);
-            opacity: 0.6;
-        }
-
-        .btn-dest.active {
-            filter: grayscale(0);
-            opacity: 1;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-
-        .btn-dest[data-dest="almacen"].active { border-color: var(--primary-red); background: #fff5f5; color: var(--primary-red); }
-        .btn-dest[data-dest="compras"].active { border-color: var(--primary-blue); background: #f0f7ff; color: var(--primary-blue); }
-
-        /* Inputs y Labels */
-        .field-group { margin-bottom: 20px; }
-        label { display: block; font-weight: 700; margin-bottom: 8px; font-size: 0.9rem; text-transform: uppercase; }
+        :root { --red: #d32f2f; --blue: #1976d2; --gray: #f8f9fa; --dark: #2c3e50; }
+        body { font-family: 'Segoe UI', sans-serif; background: #eceff1; margin: 0; color: var(--dark); }
         
-        input, textarea, select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 1rem;
-        }
+        /* Header ISO */
+        .iso-header { background: #1a1a1a; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 3px solid var(--red); }
+        .iso-header h1 { margin: 0; font-size: 1.2rem; letter-spacing: 1px; }
 
-        textarea { font-family: 'Roboto Mono', monospace; background: #fafafa; }
+        .container { max-width: 850px; margin: 25px auto; background: white; border-radius: 8px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); overflow: hidden; }
+        .doc-meta { background: var(--gray); padding: 10px 25px; border-bottom: 1px solid #ddd; font-size: 0.75rem; color: #666; display: flex; justify-content: space-between; }
 
-        .row { display: flex; gap: 20px; }
-        .row > div { flex: 1; }
+        .form-content { padding: 30px; }
 
-        /* Botón de Acción */
-        .btn-submit {
-            background: var(--primary-red);
-            color: white;
-            border: none;
-            padding: 18px;
-            width: 100%;
-            border-radius: 6px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: 0.3s;
-        }
+        /* Selector de Destino */
+        .target-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+        .target-card { padding: 15px; border: 2px solid #ddd; border-radius: 6px; text-align: center; cursor: pointer; transition: 0.3s; opacity: 0.6; }
+        .target-card.active { opacity: 1; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .target-card[data-target="almacen"].active { border-color: var(--red); background: #fff5f5; color: var(--red); }
+        .target-card[data-target="compras"].active { border-color: var(--blue); background: #f0f7ff; color: var(--blue); }
 
-        .btn-submit:hover { filter: brightness(1.2); }
+        /* Formulario */
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+        label { display: block; font-weight: bold; font-size: 0.85rem; margin-bottom: 6px; color: #444; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 0.95rem; }
+        textarea { font-family: 'Courier New', monospace; resize: vertical; }
+
+        .btn-print { width: 100%; padding: 18px; border: none; border-radius: 6px; color: white; font-weight: bold; font-size: 1rem; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; }
     </style>
 </head>
 <body>
 
-    <header class="sgc-header">
-        <div>
-            <h1>ARANMEX AD <small style="font-size: 0.6rem; vertical-align: middle;">SGC</small></h1>
-            <span>SISTEMA DE GESTIÓN DE CALIDAD - VGT</span>
-        </div>
-        <div style="text-align: right;">
-            <a href="index.html" style="color: white; text-decoration: none; font-size: 0.8rem; border: 1px solid #444; padding: 5px 10px; border-radius: 4px;">CERRAR SESIÓN</a>
-        </div>
+    <header class="iso-header">
+        <h1>ARANMEX AD | GESTIÓN DE PRODUCCIÓN</h1>
+        <a href="index.html" style="color: #aaa; text-decoration: none; font-size: 0.8rem;">← SALIR</a>
     </header>
 
-    <main class="main-content">
-        <div class="form-banner">
-            <span>DOCUMENTO: <strong>F-PRD-VGT-01</strong></span>
-            <span>ESTADO: <strong style="color: green;">CONTROLADO</strong></span>
+    <div class="container">
+        <div class="doc-meta">
+            <span>CÓDIGO: <strong>F-PRD-VGT-01</strong></span>
+            <span>REVISIÓN: <strong>02</strong></span>
+            <span>ESTADO: <strong>DOCUMENTO CONTROLADO</strong></span>
         </div>
 
-        <div class="form-body">
-            <label>SELECCIONE DESTINO DE REQUISICIÓN:</label>
-            <div class="selector-grid">
-                <div id="opt-almacen" class="btn-dest active" data-dest="almacen" onclick="cambiarDestino('almacen')">
-                    <div style="font-size: 1.5rem;">📦</div>
-                    <strong>ALMACÉN</strong><br><small>INSUMOS DE PRODUCCIÓN</small>
+        <div class="form-content">
+            <label>DESTINO DE REQUISICIÓN:</label>
+            <div class="target-selector">
+                <div id="btn-almacen" class="target-card active" data-target="almacen" onclick="updateTarget('almacen')">
+                    <strong>📦 ALMACÉN</strong><br><small>Refacciones e Insumos</small>
                 </div>
-                <div id="opt-compras" class="btn-dest" data-dest="compras" onclick="cambiarDestino('compras')">
-                    <div style="font-size: 1.5rem;">🛒</div>
-                    <strong>COMPRAS</strong><br><small>EQUIPO Y HERRAMIENTA</small>
+                <div id="btn-compras" class="target-card" data-target="compras" onclick="updateTarget('compras')">
+                    <strong>🛒 COMPRAS</strong><br><small>Herramientas y Activos</small>
                 </div>
             </div>
 
-            <div class="row">
-                <div class="field-group">
-                    <label>TÉCNICO SOLICITANTE</label>
-                    <input type="text" id="operador" placeholder="Nombre completo">
+            <div class="grid">
+                <div>
+                    <label>NOMBRE DEL SOLICITANTE</label>
+                    <input type="text" id="operador" placeholder="Ej. Juan Pérez">
                 </div>
-                <div class="field-group">
-                    <label>MODELO / NO. PARTE</label>
-                    <input type="text" id="modelo" placeholder="Ej: VGT-750-AD">
+                <div>
+                    <label>EQUIPO DESTINO (MODELO MAESTRO)</label>
+                    <input type="text" id="maestro" placeholder="Ej. Turbo HE200WG / Actuador V4">
                 </div>
             </div>
 
-            <div class="field-group">
-                <label id="lbl-detalle">LISTA DE MATERIALES / DESCRIPCIÓN DEL DAÑO</label>
-                <textarea id="materiales" rows="5" placeholder="CANTIDAD | DESCRIPCIÓN | OBSERVACIONES"></textarea>
+            <div style="margin-bottom: 20px;">
+                <label id="lbl-lista">LISTADO DE MATERIALES (CANTIDAD | MODELO-P/N | DESCRIPCIÓN)</label>
+                <textarea id="lista" rows="6" placeholder="Ej: 2 | 6203-ZZ | Balero de bolas&#10;Ej: 1 | 352-441 | Sello de aceite"></textarea>
             </div>
 
-            <div class="row">
-                <div class="field-group">
-                    <label>MOTIVO DE SALIDA</label>
+            <div class="grid">
+                <div>
+                    <label>MOTIVO / PROCESO</label>
                     <select id="motivo">
-                        <option value="Producción Diaria">Producción Diaria</option>
-                        <option value="Garantía">Garantía / Retrabajo</option>
-                        <option value="Falla de Equipo">Falla de Herramienta</option>
-                        <option value="Desarrollo">Investigación y Desarrollo (I+D)</option>
+                        <option value="PRODUCCION">PRODUCCIÓN DIARIA</option>
+                        <option value="GARANTIA">GARANTÍA / RETRABAJO</option>
+                        <option value="MANTENIMIENTO">MANTENIMIENTO DE EQUIPO</option>
+                        <option value="DESARROLLO">INVESTIGACIÓN (I+D)</option>
                     </select>
                 </div>
-                <div class="field-group">
-                    <label>PRIORIDAD</label>
+                <div>
+                    <label>NIVEL DE PRIORIDAD</label>
                     <select id="prioridad">
                         <option value="NORMAL">NORMAL</option>
                         <option value="URGENTE">URGENTE (PARO DE LÍNEA)</option>
@@ -189,81 +93,90 @@
                 </div>
             </div>
 
-            <button class="btn-submit" id="main-btn" onclick="ejecutarVale()">
-                GENERAR REGISTRO E IMPRIMIR
+            <button id="btn-submit" class="btn-print" style="background: var(--red);" onclick="generarVale()">
+                GENERAR REGISTRO DE TRAZABILIDAD
             </button>
         </div>
-    </main>
+    </div>
 
     <script>
-        let destino = 'almacen';
+        let currentTarget = 'almacen';
 
-        function cambiarDestino(d) {
-            destino = d;
-            document.querySelectorAll('.btn-dest').forEach(b => b.classList.remove('active'));
-            document.getElementById('opt-' + d).classList.add('active');
+        function updateTarget(t) {
+            currentTarget = t;
+            document.querySelectorAll('.target-card').forEach(c => c.classList.remove('active'));
+            document.getElementById('btn-' + t).classList.add('active');
             
-            const btn = document.getElementById('main-btn');
-            const lbl = document.getElementById('lbl-detalle');
+            const btn = document.getElementById('btn-submit');
+            const lbl = document.getElementById('lbl-lista');
             
-            if(d === 'almacen') {
+            if(t === 'almacen') {
                 btn.style.backgroundColor = '#d32f2f';
-                lbl.innerText = "LISTA DE MATERIALES (INSUMOS)";
+                lbl.innerText = "LISTADO DE MATERIALES (CANTIDAD | MODELO-P/N | DESCRIPCIÓN)";
             } else {
                 btn.style.backgroundColor = '#1976d2';
-                lbl.innerText = "DESCRIPCIÓN DE EQUIPO / FALLA DE HERRAMIENTA";
+                lbl.innerText = "ESPECIFICACIÓN DE HERRAMIENTA O EQUIPO DAÑADO";
             }
         }
 
-        function ejecutarVale() {
+        function generarVale() {
             const op = document.getElementById('operador').value;
-            const mat = document.getElementById('materiales').value;
-            const mod = document.getElementById('modelo').value;
+            const mat = document.getElementById('lista').value;
+            const mae = document.getElementById('maestro').value;
 
-            if(!op || !mat || !mod) {
-                alert("ERROR DE TRAZABILIDAD: Todos los campos son requeridos para cumplir con ISO 9001.");
+            if(!op || !mat || !mae) {
+                alert("ERROR DE CONTROL: Todos los campos son obligatorios para la trazabilidad ISO 9001.");
                 return;
             }
 
             const hoy = new Date();
-            const folio = `${destino === 'almacen' ? 'VGT' : 'COM'}-${hoy.getDate()}${hoy.getMonth()+1}-${Math.floor(Math.random()*999)}`;
+            const folio = `${currentTarget === 'almacen' ? 'VGT' : 'COM'}-${hoy.getDate()}${hoy.getMonth()+1}-${Math.floor(Math.random()*999)}`;
             
             const win = window.open('', '_blank');
             win.document.write(`
                 <html>
                 <head>
                     <style>
-                        body { font-family: 'Courier New', monospace; width: 80mm; padding: 10px; border: 2px solid #000; }
-                        .ticket-header { text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 10px; }
-                        .ticket-body { font-size: 12px; }
+                        body { font-family: 'Courier New', monospace; width: 80mm; padding: 5px; border: 1px solid #000; font-size: 12px; }
+                        .h { text-align: center; border-bottom: 2px solid #000; padding-bottom: 5px; margin-bottom: 10px; }
                         .bold { font-weight: bold; }
-                        .footer { margin-top: 30px; font-size: 10px; text-align: center; }
-                        .firma { border-top: 1px solid #000; margin-top: 20px; width: 80%; margin-left: 10%; }
+                        .section { margin-bottom: 10px; padding: 2px; border-bottom: 0.5px dashed #ccc; }
+                        .footer { margin-top: 25px; font-size: 9px; text-align: center; border-top: 1px solid #000; padding-top: 5px; }
+                        .sign { margin-top: 30px; display: flex; justify-content: space-between; }
+                        .line { border-top: 1px solid #000; width: 45%; text-align: center; font-size: 9px; }
                     </style>
                 </head>
                 <body>
-                    <div class="ticket-header">
-                        <h2 style="margin:0">ARANMEX AD</h2>
-                        <div style="font-size:10px">REGISTRO DE TRAZABILIDAD</div>
+                    <div class="h">
+                        <h3 style="margin:0">ARANMEX AD</h3>
+                        <div style="font-size:9px">REGISTRO: F-PRD-VGT-01</div>
                         <div class="bold">FOLIO: ${folio}</div>
                     </div>
-                    <div class="ticket-body">
-                        <div>FECHA: ${hoy.toLocaleDateString()} ${hoy.toLocaleTimeString()}</div>
-                        <div>ÁREA: VGT / INGENIERÍA</div>
-                        <hr>
+                    
+                    <div class="section">
+                        <div><span class="bold">FECHA:</span> ${hoy.toLocaleString()}</div>
                         <div><span class="bold">SOLICITA:</span> ${op.toUpperCase()}</div>
-                        <div><span class="bold">MOD/PARTE:</span> ${mod.toUpperCase()}</div>
+                        <div><span class="bold">EQ. MAESTRO:</span> ${mae.toUpperCase()}</div>
+                    </div>
+
+                    <div class="section">
                         <div><span class="bold">MOTIVO:</span> ${document.getElementById('motivo').value}</div>
                         <div><span class="bold">PRIORIDAD:</span> ${document.getElementById('prioridad').value}</div>
-                        <hr>
-                        <div class="bold">MATERIALES:</div>
-                        <div style="padding-left: 5px;">${mat.replace(/\n/g, '<br>')}</div>
                     </div>
+
+                    <div class="section">
+                        <div class="bold">DETALLE DE MATERIALES:</div>
+                        <div style="padding-top:5px; white-space: pre-wrap;">${mat}</div>
+                    </div>
+
+                    <div class="sign">
+                        <div class="line"><br>SOLICITANTE</div>
+                        <div class="line"><br>AUTORIZA / RECIBE</div>
+                    </div>
+
                     <div class="footer">
-                        <div class="firma">SOLICITA</div>
-                        <div class="firma">ENTREGA (ALMACÉN/COMPRAS)</div>
-                        <br>
-                        "LA CALIDAD ES NUESTRO ESTÁNDAR"
+                        ESTE DOCUMENTO ES UN REGISTRO DE CALIDAD.<br>
+                        "TRAZABILIDAD GARANTIZADA"
                     </div>
                     <script>window.onload = function(){ window.print(); window.close(); } <\/script>
                 </body>
