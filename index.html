@@ -43,53 +43,61 @@
         </div>
     </main>
 
-    <script>
-    // Diccionario de llaves encriptadas (SHA-256 parcial)
-    // No son los PINs reales, son sus "huellas digitales"
-    const _vault = {
-        'vgt': { hash: "81dc9bdb52d04dc20036dbd8313ed055", url: 'vgt.html' },        // PIN: 1234
-        'tubos': { hash: "e2fc714c4727ee9395f324cd2e7f331f", url: 'tubos.html' },      // PIN: 2345
-        'inyectores': { hash: "8d5e05445d424e64293f94e215433f81", url: 'inyectores.html' }, // PIN: 3456
-        'compras': { hash: "1aabac6d068eef403b2cccf4581177d5", url: 'compras.html' },  // PIN: 9999
-        'almacen': { hash: "e99a18c428cb38d5f260853678922e03", url: 'almacen.html' }   // PIN: 8888
-    };
+    <main class="container">
+    <div class="portal-grid">
+        <div class="portal-card" onclick="abrirLogin('vgt')"><h3>VGT</h3><p>Ingeniería</p></div>
+        <div class="portal-card" onclick="abrirLogin('tubos')"><h3>TUBOS</h3><p>Producción</p></div>
+        <div class="portal-card" onclick="abrirLogin('inyectores')"><h3>INYECTORES</h3><p>Diesel Lab</p></div>
+        <div class="portal-card receptor" onclick="abrirLogin('compras')"><h3>COMPRAS</h3><p>Externo</p></div>
+        <div class="portal-card receptor" onclick="abrirLogin('almacen')"><h3>ALMACÉN</h3><p>Interno</p></div>
+    </div>
+</main>
 
-    // Función simple de hashing para comparar
-    function sHash(s) {
-        let h = 0;
-        for (let i = 0; i < s.length; i++) h = Math.imul(31, h) + s.charCodeAt(i) | 0;
-        return h.toString(16);
+<div id="modal-login" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1000; justify-content:center; align-items:center;">
+    <div style="background:white; padding:30px; border-radius:8px; width:300px; text-align:center;">
+        <h3 id="login-title" style="margin-bottom:15px; text-transform:uppercase;"></h3>
+        <input type="password" id="pin-input" placeholder="PIN de 4 dígitos" style="text-align:center; font-size:1.5rem; letter-spacing:5px; margin-bottom:20px;">
+        <button class="btn-status btn-primary" onclick="validarAcceso()">Entrar</button>
+        <button onclick="cerrarLogin()" style="background:none; border:none; color:grey; margin-top:10px; cursor:pointer;">Cancelar</button>
+    </div>
+</div>
+
+<script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-client'
+    const _supabase = createClient('URL_DE_TU_SUPABASE', 'TU_ANON_KEY')
+
+    let areaSeleccionada = '';
+
+    window.abrirLogin = (area) => {
+        areaSeleccionada = area;
+        document.getElementById('login-title').innerText = "Acceso " + area.toUpperCase();
+        document.getElementById('modal-login').style.display = 'flex';
+        document.getElementById('pin-input').focus();
     }
 
-    async function acceso(area) {
-        const pin = prompt("SEGURIDAD ARANMEX: Ingrese PIN de acceso para " + area.toUpperCase());
-        
-        if (!pin) return;
+    window.cerrarLogin = () => {
+        document.getElementById('modal-login').style.display = 'none';
+        document.getElementById('pin-input').value = '';
+    }
 
-        // MD5 simplificado para la comparación (Oculta el texto plano)
-        // Usaremos una validación rápida
-        const inputHash = btoa(pin).toLowerCase(); 
-        
-        // Simulación de validación (Para este nivel de seguridad local):
-        // Nota: Los hashes de arriba son ejemplos. 
-        // Para máxima seguridad real, comparamos el valor ingresado.
-        
-        if (validarPin(area, pin)) {
-            window.location.href = _vault[area].url;
+    window.validarAcceso = async () => {
+        const pinIngresado = document.getElementById('pin-input').value;
+
+        // CONSULTA A SUPABASE: Buscamos si existe esa combinación área/pin
+        const { data, error } = await _supabase
+            .from('accesos_aranmex')
+            .select('area')
+            .eq('area', areaSeleccionada)
+            .eq('pin', pinIngresado)
+            .single();
+
+        if (data) {
+            // Si hay coincidencia, redirigimos
+            window.location.href = areaSeleccionada + ".html";
         } else {
-            alert("ACCESO DENEGADO: PIN INCORRECTO");
+            alert("PIN INCORRECTO O ÁREA NO AUTORIZADA");
+            document.getElementById('pin-input').value = '';
         }
-    }
-
-    function validarPin(area, pin) {
-        const claves = {
-            'vgt': '1234',
-            'tubos': '2345',
-            'inyectores': '3456',
-            'compras': '9999',
-            'almacen': '8888'
-        };
-        return pin === claves[area];
     }
 </script>
 </body>
