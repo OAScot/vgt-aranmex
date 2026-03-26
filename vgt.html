@@ -2,12 +2,11 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>SGC Aranmex | Vale Herramientas y Materiales VGT</title>
+    <title>SGC Aranmex | Vale Horizontal VGT</title>
     <style>
         :root { --red: #d32f2f; --blue: #1976d2; --dark: #1e1e1e; }
         body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; }
         
-        /* Interfaz de Usuario */
         .header-ui { background: var(--dark); color: white; padding: 15px 30px; display: flex; justify-content: space-between; border-bottom: 4px solid var(--red); }
         .container { max-width: 1000px; margin: 20px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         
@@ -21,14 +20,15 @@
         label { display: block; font-weight: bold; font-size: 0.8rem; margin-bottom: 5px; color: #555; }
         input, select, textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem; box-sizing: border-box; }
         
-        .btn-submit { width: 100%; padding: 20px; border: none; border-radius: 6px; color: white; font-weight: bold; font-size: 1.1rem; cursor: pointer; margin-top: 10px; }
+        .btn-submit { width: 100%; padding: 20px; border: none; border-radius: 6px; color: white; font-weight: bold; font-size: 1.1rem; cursor: pointer; margin-top: 10px; transition: 0.2s; }
+        .btn-submit:hover { opacity: 0.9; }
     </style>
 </head>
 <body>
 
 <header class="header-ui">
     <strong>ARANMEX AD | SISTEMA DE REQUISICIONES</strong>
-    <a href="../index.html" style="color: #888; text-decoration: none;">VOLVER</a>
+    <a href="../index.html" style="color: #888; text-decoration: none; font-size: 0.8rem;">VOLVER AL PANEL</a>
 </header>
 
 <div class="container">
@@ -39,112 +39,120 @@
 
     <div class="row">
         <div>
-            <label>RESPONSABLE</label>
+            <label>RESPONSABLE DE ÁREA</label>
             <input type="text" id="resp" placeholder="Nombre del solicitante">
         </div>
         <div>
-            <label>ID JORNADA / LOTE</label>
-            <input type="text" id="jornada" placeholder="Ej: PROD-2603">
+            <label>ID JORNADA / LOTE DE PRODUCCIÓN</label>
+            <input type="text" id="jornada" placeholder="Ej: PROD-260326">
         </div>
     </div>
 
     <div style="margin-bottom: 15px;">
-        <label>DETALLE DE MATERIALES (Se recomienda usar formato de tabla en el vale final)</label>
-        <textarea id="lista" rows="6" placeholder="CANT | P/N | DESCRIPCIÓN | MODELO DESTINO"></textarea>
+        <label>DETALLE DE MATERIALES (CANT | P/N | DESCRIPCIÓN | MODELO DESTINO)</label>
+        <textarea id="lista" rows="6" placeholder="Escriba aquí los materiales..."></textarea>
     </div>
 
     <div class="row">
         <div>
-            <label>MOTIVO</label>
+            <label>MOTIVO / TIPO DE CARGA</label>
             <select id="motivo">
-                <option>PRODUCCIÓN</option>
-                <option>GARANTÍA</option>
+                <option value="PRODUCCIÓN">PRODUCCIÓN DEL DÍA</option>
+                <option value="GARANTÍA">GARANTÍA / RETRABAJO</option>
+                <option value="I+D">INVESTIGACIÓN Y DESARROLLO</option>
             </select>
         </div>
         <div>
             <label>PRIORIDAD</label>
             <select id="prior">
-                <option>NORMAL</option>
-                <option>URGENTE</option>
+                <option value="NORMAL">NORMAL</option>
+                <option value="URGENTE">URGENTE (PARO DE LÍNEA)</option>
             </select>
         </div>
     </div>
 
-    <button id="btnMain" class="btn-submit" style="background: var(--red);" onclick="imprimir()">GENERAR REQUISICIÓN</button>
+    <button id="btnMain" class="btn-submit" style="background: var(--red);" onclick="imprimir()">
+        GENERAR REQUISICIÓN VGT-ALM
+    </button>
 </div>
 
 <script>
     let dest = 'ALM';
+    
     function setT(t) {
         dest = t;
         document.querySelectorAll('.btn-dest').forEach(b => b.classList.remove('active'));
         document.getElementById('t-'+t).classList.add('active');
-        document.getElementById('btnMain').style.background = (t === 'ALM') ? '#d32f2f' : '#1976d2';
+        const btn = document.getElementById('btnMain');
+        btn.style.background = (t === 'ALM') ? '#d32f2f' : '#1976d2';
+        btn.innerText = `GENERAR REQUISICIÓN VGT-${t}`;
     }
 
     function imprimir() {
         const r = document.getElementById('resp').value;
         const j = document.getElementById('jornada').value;
         const l = document.getElementById('lista').value;
-        if(!r || !j || !l) return alert("Faltan datos.");
+        
+        if(!r || !j || !l) {
+            alert("Error: Ingrese todos los campos para trazabilidad.");
+            return;
+        }
 
-        const folio = `VGT-${dest}-${Math.floor(Math.random()*9999)}`;
+        const folio = `VGT-${dest}-${Date.now().toString().slice(-4)}`;
         const win = window.open('', '_blank');
 
         win.document.write(`
             <html>
             <head>
+                <title>Registro ${folio}</title>
                 <style>
                     @page { size: landscape; margin: 10mm; }
-                    body { font-family: 'Segoe UI', Arial; margin: 0; padding: 10px; color: #333; }
-                    .header-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-                    .header-table td { border: 1px solid #000; padding: 10px; }
-                    .logo { font-size: 24px; font-weight: bold; text-align: center; width: 25%; }
-                    .title { text-align: center; width: 50%; font-weight: bold; font-size: 16px; }
-                    .meta { width: 25%; font-size: 10px; }
+                    body { font-family: 'Segoe UI', Arial; margin: 0; padding: 5px; color: #333; }
+                    .header-table { width: 100%; border-collapse: collapse; margin-bottom: 15px; }
+                    .header-table td { border: 1.5px solid #000; padding: 12px; }
+                    .logo { font-size: 22px; font-weight: bold; text-align: center; width: 20%; }
+                    .title { text-align: center; width: 60%; font-weight: bold; font-size: 18px; text-transform: uppercase; }
+                    .meta { width: 20%; font-size: 10px; line-height: 1.4; }
                     
-                    .info-grid { display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 12px; }
+                    .info-bar { display: flex; justify-content: space-between; padding: 10px; background: #f9f9f9; border: 1px solid #000; font-size: 12px; margin-bottom: 10px; }
                     
-                    table.data-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-                    table.data-table th { background: #f2f2f2; border: 1px solid #000; padding: 8px; font-size: 11px; }
-                    table.data-table td { border: 1px solid #000; padding: 8px; font-size: 11px; min-height: 100px; }
+                    table.data-table { width: 100%; border-collapse: collapse; }
+                    table.data-table th { background: #e0e0e0; border: 1.5px solid #000; padding: 8px; font-size: 11px; text-transform: uppercase; }
+                    table.data-table td { border: 1.5px solid #000; padding: 10px; font-size: 12px; vertical-align: top; font-family: 'Courier New', monospace; height: 250px; white-space: pre-wrap; }
                     
-                    .footer-signs { display: flex; justify-content: space-around; margin-top: 50px; }
-                    .sign-box { border-top: 1px solid #000; width: 200px; text-align: center; font-size: 10px; padding-top: 5px; }
+                    .footer-signs { display: flex; justify-content: space-around; margin-top: 40px; }
+                    .sign-box { border-top: 1.5px solid #000; width: 220px; text-align: center; font-size: 10px; padding-top: 8px; font-weight: bold; }
                 </style>
             </head>
             <body>
                 <table class="header-table">
                     <tr>
                         <td class="logo">ARANMEX AD</td>
-                        <td class="title">REQUISICIÓN DE MATERIALES Y EQUIPO<br><small>ÁREA: PRODUCCIÓN VGT</small></td>
+                        <td class="title">REQUISICIÓN DE MATERIALES Y EQUIPO<br><small>SGC - ÁREA DE PRODUCCIÓN VGT</small></td>
                         <td class="meta">
-                            FOLIO: <span style="font-weight:bold; font-size:14px;">${folio}</span><br>
-                            FECHA: ${new Date().toLocaleDateString()}<br>
-                            DOC: F-PRD-VGT-01
+                            <strong>FOLIO:</strong> ${folio}<br>
+                            <strong>FECHA:</strong> ${new Date().toLocaleDateString()}<br>
+                            <strong>DOC:</strong> F-PRD-VGT-01
                         </td>
                     </tr>
                 </table>
 
-                <div class="info-grid">
-                    <div><strong>SOLICITANTE:</strong> ${r.toUpperCase()}</div>
-                    <div><strong>ID JORNADA:</strong> ${j.toUpperCase()}</div>
-                    <div><strong>MOTIVO:</strong> ${document.getElementById('motivo').value}</div>
-                    <div><strong>PRIORIDAD:</strong> ${document.getElementById('prior').value}</div>
+                <div class="info-bar">
+                    <span><strong>RESPONSABLE:</strong> ${r.toUpperCase()}</span>
+                    <span><strong>JORNADA:</strong> ${j.toUpperCase()}</span>
+                    <span><strong>MOTIVO:</strong> ${document.getElementById('motivo').value}</span>
+                    <span><strong>PRIORIDAD:</strong> ${document.getElementById('prior').value}</span>
                 </div>
 
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th style="width:10%">CANTIDAD</th>
-                            <th style="width:20%">MODELO / P/N</th>
-                            <th style="width:40%">DESCRIPCIÓN DEL MATERIAL</th>
-                            <th style="width:30%">MODELO DESTINO (EQUIPO)</th>
+                            <th>DETALLE DE CARGA AGRUPADA (CANTIDAD | P/N | DESCRIPCIÓN | DESTINO)</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td colspan="4" style="height: 180px; vertical-align: top; white-space: pre-wrap;">${l}</td>
+                            <td>${l}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -152,17 +160,23 @@
                 <div class="footer-signs">
                     <div class="sign-box">FIRMA SOLICITANTE</div>
                     <div class="sign-box">VALIDACIÓN INGENIERÍA</div>
-                    <div class="sign-box">ENTREGA ALMACÉN</div>
+                    <div class="sign-box">ENTREGA ALMACÉN / COMPRAS</div>
                 </div>
 
-                <div style="margin-top: 30px; font-size: 8px; text-align: center; color: #666;">
-                    Propiedad Intelectual de Aranmex AD - Sistema de Gestión de Calidad ISO 9001:2015
+                <div style="margin-top: 25px; font-size: 9px; text-align: center; color: #555; border-top: 0.5px solid #ccc; padding-top: 10px;">
+                    Este documento es un registro oficial de Aranmex AD. Prohibida su reproducción parcial sin autorización del Jefe de I+D.
                 </div>
 
-                <script>window.onload = function(){ window.print(); window.close(); }<\/script>
+                <script>
+                    window.onload = function() {
+                        window.print();
+                        setTimeout(() => { window.close(); }, 500);
+                    };
+                <\/script>
             </body>
             </html>
         `);
+        win.document.close();
     }
 </script>
 
