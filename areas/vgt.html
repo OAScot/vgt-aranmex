@@ -2,13 +2,15 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>SGC Aranmex | Requisición VGT Vertical</title>
+    <title>SGC Aranmex | Requisición VGT</title>
     <style>
         :root { --red: #d32f2f; --blue: #1976d2; --dark: #1e1e1e; }
         body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; }
         
         /* Interfaz de Usuario */
-        .header-ui { background: var(--dark); color: white; padding: 15px 30px; display: flex; justify-content: space-between; border-bottom: 4px solid var(--red); }
+        .header-ui { background: var(--dark); color: white; padding: 10px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid var(--red); }
+        .logo-ui { height: 45px; vertical-align: middle; }
+        
         .container { max-width: 800px; margin: 20px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         
         .dest-toggle { display: flex; gap: 10px; margin-bottom: 25px; }
@@ -28,8 +30,11 @@
 <body>
 
 <header class="header-ui">
-    <strong>ARANMEX AD | SGC PRODUCCIÓN</strong>
-    <a href="../index.html" style="color: #888; text-decoration: none; font-size: 0.8rem;">VOLVER</a>
+    <img src="../assets/logo-aranmex.png" alt="Aranmex Logo" class="logo-ui">
+    <div style="text-align: right;">
+        <div style="font-weight: bold; font-size: 0.9rem;">SISTEMA DE REQUISICIONES</div>
+        <a href="../index.html" style="color: #888; text-decoration: none; font-size: 0.7rem;">VOLVER AL PANEL</a>
+    </div>
 </header>
 
 <div class="container">
@@ -73,7 +78,7 @@
     </div>
 
     <button id="btnMain" class="btn-submit" style="background: var(--red);" onclick="imprimir()">
-        IMPRIMIR REQUISICIÓN VERTICAL
+        IMPRIMIR REQUISICIÓN VGT-ALM
     </button>
 </div>
 
@@ -109,31 +114,34 @@
                 <style>
                     @page { size: portrait; margin: 15mm; }
                     body { font-family: 'Segoe UI', Arial; margin: 0; padding: 0; color: #111; line-height: 1.4; }
-                    .header-box { border: 2px solid #000; display: flex; margin-bottom: 20px; }
-                    .logo { width: 25%; border-right: 2px solid #000; padding: 15px; font-weight: bold; font-size: 20px; text-align: center; display: flex; align-items: center; justify-content: center; }
-                    .title { width: 50%; border-right: 2px solid #000; padding: 10px; text-align: center; font-weight: bold; text-transform: uppercase; display: flex; align-items: center; justify-content: center; }
-                    .meta { width: 25%; padding: 10px; font-size: 10px; }
+                    .header-box { border: 2.5px solid #000; display: flex; margin-bottom: 20px; min-height: 80px; }
+                    .logo-cell { width: 25%; border-right: 2.5px solid #000; padding: 10px; display: flex; align-items: center; justify-content: center; }
+                    .logo-cell img { max-width: 100%; max-height: 60px; }
+                    .title-cell { width: 50%; border-right: 2.5px solid #000; padding: 10px; text-align: center; font-weight: bold; text-transform: uppercase; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+                    .meta-cell { width: 25%; padding: 10px; font-size: 10px; display: flex; flex-direction: column; justify-content: center; }
 
                     .info-section { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 12px; }
-                    .info-section td { border: 1px solid #000; padding: 8px; }
+                    .info-section td { border: 1.5px solid #000; padding: 10px; }
 
                     .data-table { width: 100%; border-collapse: collapse; margin-bottom: 40px; }
-                    .data-table th { background: #eee; border: 2px solid #000; padding: 10px; font-size: 11px; text-align: left; }
-                    .data-table td { border: 2px solid #000; padding: 15px; font-size: 13px; vertical-align: top; height: 450px; font-family: 'Courier New', monospace; white-space: pre-wrap; }
+                    .data-table th { background: #eee; border: 2.5px solid #000; padding: 10px; font-size: 11px; text-align: left; }
+                    .data-table td { border: 2.5px solid #000; padding: 15px; font-size: 13px; vertical-align: top; height: 500px; font-family: 'Courier New', monospace; white-space: pre-wrap; }
 
-                    .footer-signs { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 30px; }
-                    .sign-box { border-top: 1.5px solid #000; text-align: center; font-size: 10px; padding-top: 8px; font-weight: bold; }
-                    .bottom-text { margin-top: 40px; text-align: center; font-size: 8px; color: #666; border-top: 0.5px solid #ccc; padding-top: 10px; }
+                    .footer-signs { display: grid; grid-template-columns: 1fr 1fr; gap: 60px; margin-top: 40px; padding: 0 40px; }
+                    .sign-box { border-top: 2px solid #000; text-align: center; font-size: 11px; padding-top: 8px; font-weight: bold; }
+                    .bottom-text { margin-top: 50px; text-align: center; font-size: 9px; color: #444; border-top: 1px solid #ccc; padding-top: 10px; }
                 </style>
             </head>
             <body>
                 <div class="header-box">
-                    <div class="logo">ARANMEX AD</div>
-                    <div class="title">REQUISICIÓN DE MATERIALES<br><small>SGC - ÁREA VGT</small></div>
-                    <div class="meta">
+                    <div class="logo-cell">
+                        <img src="../assets/logo-ad.png" alt="AD Logo">
+                    </div>
+                    <div class="title-cell">REQUISICIÓN DE MATERIALES<br>ÁREA DE PRODUCCIÓN VGT</div>
+                    <div class="meta-cell">
                         <strong>FOLIO:</strong> ${folio}<br>
                         <strong>FECHA:</strong> ${new Date().toLocaleDateString()}<br>
-                        <strong>DOC:</strong> F-PRD-VGT-01
+                        <strong>CÓDIGO:</strong> F-PRD-VGT-01
                     </div>
                 </div>
 
@@ -151,7 +159,7 @@
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>DETALLE DE MATERIALES (CANT | P/N | DESCRIPCIÓN | DESTINO)</th>
+                            <th>LISTADO DE INSUMOS (CANT | P/N | DESCRIPCIÓN | DESTINO)</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -167,7 +175,8 @@
                 </div>
 
                 <div class="bottom-text">
-                    Registro controlado bajo ISO 9001:2015. Aranmex AD Laboratorio Diesel y Turbos.
+                    Aranmex AD | Laboratorio Diesel y Turbos | Guadalajara, Jalisco.<br>
+                    <strong>REGISTRO CONTROLADO ISO 9001:2015</strong>
                 </div>
 
                 <script>
