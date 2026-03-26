@@ -31,29 +31,23 @@
         <div style="background:white; padding:30px; border-radius:8px; width:300px; text-align:center;">
             <h3 id="login-title" style="margin-bottom:15px; text-transform:uppercase;">Acceso</h3>
             <input type="password" id="pin-input" placeholder="PIN" style="text-align:center; font-size:1.5rem; letter-spacing:5px; margin-bottom:20px; width: 100%; padding: 10px; border: 1px solid #ccc;">
-            <button class="btn-status btn-primary" id="btn-entrar-click">Entrar</button>
+            <button class="btn-status btn-primary" onclick="validarAccesoLocal()">Entrar</button>
             <button onclick="cerrarLogin()" style="background:none; border:none; color:grey; margin-top:15px; cursor:pointer; display: block; width: 100%;">Cancelar</button>
         </div>
     </div>
 
-    <script src="https://unpkg.com/@supabase/supabase-client@2"></script>
-
     <script>
-        let _supabase = null;
         let areaSeleccionada = '';
 
-        // SEGURO: Espera a que la librería cargue correctamente
-        const inicializarSupabase = setInterval(() => {
-            if (window.supabase) {
-                clearInterval(inicializarSupabase);
-                const { createClient } = window.supabase;
-                _supabase = createClient(
-                    'https://bhmkqevggjunssdddxjr.supabase.co', 
-                    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJobWtxZXZnZ2p1bnNzZGRkeGpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NzE0OTQsImV4cCI6MjA5MDA0NzQ5NH0.HrGB8jtMEvIIPjpn2VsFDt6p18U1j8BtEfjR97WlbOw'
-                );
-                console.log("Supabase listo.");
-            }
-        }, 100);
+        // PINs "Disfrazados" en Base64 para que no se vean al dar F12
+        // vgt: 1234, turbos: 2345, inyectores: 3456, compras: 9999, almacen: 8888
+        const llaves = {
+            'vgt': 'MTIzNA==', 
+            'turbos': 'MjM0NQ==',
+            'inyectores': 'MzQ1Ng==',
+            'compras': 'OTk5OQ==',
+            'almacen': 'ODg4OA=='
+        };
 
         function abrirLogin(area) {
             areaSeleccionada = area;
@@ -67,47 +61,23 @@
             document.getElementById('modal-login').style.display = 'none';
         }
 
-        async function validarAcceso() {
-            if (!_supabase) {
-                alert("El sistema aún está cargando, espere un segundo...");
-                return;
-            }
+        function validarAccesoLocal() {
+            const pinIngresado = document.getElementById('pin-input').value;
+            // Convertimos el PIN ingresado para comparar con la llave "disfrazada"
+            const hashIngresado = btoa(pinIngresado);
 
-            const pinInput = document.getElementById('pin-input');
-            const pinIngresado = pinInput.value;
-            if(!pinIngresado) return;
-
-            try {
-                const { data, error } = await _supabase
-                    .from('accesos_aranmex')
-                    .select('area')
-                    .eq('area', areaSeleccionada)
-                    .eq('pin', pinIngresado)
-                    .maybeSingle();
-
-                if (data) {
-                    const rutas = {
-                        vgt: "vgt.html",
-                        turbos: "turbos.html",
-                        inyectores: "inyectores.html",
-                        compras: "compras.html",
-                        almacen: "almacen.html"
-                    };
-                    window.location.href = rutas[areaSeleccionada];
-                } else {
-                    alert("PIN INCORRECTO");
-                    pinInput.value = '';
-                }
-            } catch (err) {
-                alert("Error de conexión con la base de datos.");
+            if (hashIngresado === llaves[areaSeleccionada]) {
+                window.location.href = areaSeleccionada + ".html";
+            } else {
+                alert("PIN INCORRECTO");
+                document.getElementById('pin-input').value = '';
             }
         }
 
-        // Eventos
-        document.getElementById('btn-entrar-click').onclick = validarAcceso;
-        document.getElementById('pin-input').onkeypress = (e) => {
-            if (e.key === 'Enter') validarAcceso();
-        };
+        // Enter para entrar
+        document.getElementById('pin-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') validarAccesoLocal();
+        });
     </script>
 </body>
 </html>
